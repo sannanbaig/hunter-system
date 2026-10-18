@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#070b16">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hunter">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Hunter System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one column "system window" — status panel, sticky tab rail, quest panels. Deliberately single dark look. */
+:root{
+  --void:#070b16;        /* page ground */
+  --panel:#0d1630;       /* system window fill */
+  --line:#24407a;        /* window border */
+  --glow:#4fa3ff;        /* system blue */
+  --ice:#d6e8ff;         /* primary text */
+  --mist:#8399c2;        /* secondary text */
+  --gold:#f2c14e;        /* rank / rewards */
+  --red:#ff5d6c;         /* penalty */
+  --ok:#4fe0b0;          /* cleared */
+  --display:"Chakra Petch",ui-sans-serif,system-ui,sans-serif;
+  --body:"Barlow",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:8px;font-family:var(--mono);font-size:12px}
+html,body{background:var(--void)}
+body{color:var(--ice);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px;
+  background-image:radial-gradient(ellipse 120% 60% at 50% -10%,rgba(79,163,255,.16),transparent 60%);background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--void)}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.win{background:linear-gradient(180deg,rgba(79,163,255,.06),transparent 40%),var(--panel);border:1px solid var(--line);border-radius:4px;
+  box-shadow:0 0 0 1px rgba(79,163,255,.08),0 0 24px rgba(79,163,255,.12) inset;padding:16px;position:relative}
+.win::before,.win::after{content:"";position:absolute;width:10px;height:10px;border:2px solid var(--glow)}
+.win::before{top:-2px;left:-2px;border-right:0;border-bottom:0}
+.win::after{bottom:-2px;right:-2px;border-left:0;border-top:0}
+.eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--glow)}
+h1,h2{font-family:var(--display);margin:0;text-wrap:balance}
+h2{font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--mist)}
+
+/* Status */
+.status{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.rank{width:78px;height:78px;display:grid;place-items:center;border:2px solid var(--gold);border-radius:4px;
+  font-family:var(--display);font-weight:700;font-size:44px;color:var(--gold);text-shadow:0 0 14px rgba(242,193,78,.5);
+  box-shadow:0 0 18px rgba(242,193,78,.18) inset}
+.who{min-width:0}
+.who h1{font-size:22px;line-height:1.15}
+.lvlrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:6px}
+.lvl{font-family:var(--display);font-size:15px}
+.lvl b{font-size:22px;color:var(--glow)}
+.bar{height:8px;background:rgba(79,163,255,.12);border:1px solid var(--line);border-radius:2px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#2b74d8,var(--glow));box-shadow:0 0 10px var(--glow);transition:width .5s ease}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-family:var(--mono);font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:2px;color:var(--mist)}
+.chip b{color:var(--ice)}
+.sync{font-size:11px}
+
+.penalty{border-color:var(--red)}
+.penalty::before,.penalty::after{border-color:var(--red)}
+.penalty .eyebrow{color:var(--red)}
+
+/* Tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  background:var(--void);padding-block:8px}
+.tabs button{font-family:var(--display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--mist);
+  border:1px solid var(--line);border-radius:2px;padding:10px 4px;cursor:pointer}
+.tabs button[aria-selected="true"]{color:var(--void);background:var(--glow);border-color:var(--glow);box-shadow:0 0 14px rgba(79,163,255,.5)}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+/* Quests */
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
+.qlist{display:flex;flex-direction:column;gap:8px}
+.quest{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;
+  background:rgba(7,11,22,.55);border:1px solid var(--line);border-radius:2px;padding:12px;color:inherit;font:inherit;cursor:pointer}
+.quest:hover{border-color:var(--glow)}
+.box{width:24px;height:24px;border:2px solid var(--glow);border-radius:2px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--void)}
+.quest.done .box{background:var(--ok);border-color:var(--ok);box-shadow:0 0 10px rgba(79,224,176,.5)}
+.quest.done .qt{color:var(--mist);text-decoration:line-through;text-decoration-color:rgba(131,153,194,.6)}
+.qt{font-weight:600;min-width:0}
+.qd{display:block;font-size:13px;color:var(--mist);font-weight:400}
+.rew{font-family:var(--mono);font-size:12px;color:var(--gold);text-align:right;white-space:nowrap}
+.rew small{display:block;color:var(--mist)}
+.quest.side{border-style:dashed}
+.foot{margin-top:12px;font-size:13px;color:var(--mist)}
+.clear{color:var(--ok);font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;font-size:13px}
+
+.restbtn{margin-top:10px;width:100%;font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:13px;
+  background:transparent;color:var(--mist);border:1px dashed var(--line);border-radius:2px;padding:10px;cursor:pointer}
+.restbtn.on{color:var(--void);background:var(--mist);border-style:solid}
+
+/* streak strip */
+.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:10px}
+.strip i{aspect-ratio:1;max-width:100%;border:1px solid var(--line);border-radius:2px}
+.strip i.c{background:var(--ok);border-color:var(--ok)}
+.strip i.r{background:var(--mist);border-color:var(--mist);opacity:.6}
+.strip i.m{border-color:var(--red);background:rgba(255,93,108,.15)}
+.strip i.t{outline:1px solid var(--gold);outline-offset:1px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mist)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:5px;border:1px solid var(--line);vertical-align:-1px}
+.legend .lc::before{background:var(--ok);border-color:var(--ok)}
+.legend .lr::before{background:var(--mist);opacity:.6}
+.legend .lm::before{border-color:var(--red);background:rgba(255,93,108,.15)}
+
+/* stats */
+.stats{display:flex;flex-direction:column;gap:12px}
+.stat{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center}
+.stat .k{font-family:var(--display);font-weight:700;font-size:18px;color:var(--glow)}
+.stat .n{font-size:13px}
+.stat .lv{font-family:var(--mono);font-size:14px;text-align:right}
+.stat .bar{height:6px;margin-top:4px}
+
+.ranks{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.rk{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;font-size:14px}
+.rk b{font-family:var(--display);font-size:18px;text-align:center;color:var(--mist)}
+.rk.got b{color:var(--gold)}
+.rk.cur{color:var(--ice)}
+.rk:not(.got){color:var(--mist)}
+
+.danger{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.btn{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:12px;background:transparent;color:var(--mist);
+  border:1px solid var(--line);border-radius:2px;padding:8px 12px;cursor:pointer}
+.btn.red{color:var(--red);border-color:var(--red)}
+
+/* toast */
+.toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translate(-50%,-10px);opacity:0;pointer-events:none;
+  z-index:20;background:var(--panel);border:1px solid var(--gold);color:var(--gold);padding:14px 20px;border-radius:2px;text-align:center;
+  font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;box-shadow:0 0 30px rgba(242,193,78,.35);transition:.3s;max-width:calc(100% - 32px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast small{display:block;color:var(--ice);letter-spacing:.04em;text-transform:none;font-family:var(--body);margin-top:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <section class="win" id="statusWin" aria-label="Status">
+    <div class="eyebrow">Status window</div>
+    <div class="status" style="margin-top:10px">
+      <div class="rank" id="rank">E</div>
+      <div class="who">
+        <h1>Neurosurgery Hunter</h1>
+        <div class="lvlrow"><span class="lvl">LV <b id="lvl">1</b></span><span class="mono muted" id="xpText">0 / 100 XP</span></div>
+        <div class="bar"><i id="xpBar" style="width:0%"></i></div>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip">Streak <b id="streak">0</b> days</span>
+      <span class="chip">Total <b id="total">0</b> XP</span>
+      <span class="chip sync" id="sync">Saved on this phone</span>
+    </div>
+  </section>
+
+  <section class="win penalty" id="penalty" hidden>
+    <div class="eyebrow">Penalty quest</div>
+    <p style="margin:6px 0 0">Daily quests were missed two days running. Today, clear the minimum viable week only: read the approach for your next case, debrief every case, and protect family time. Clearing today's dailies lifts the penalty.</p>
+  </section>
+
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button role="tab" id="tab-today" aria-selected="true" data-tab="today">Daily</button>
+    <button role="tab" id="tab-week" aria-selected="false" data-tab="week">Weekly</button>
+    <button role="tab" id="tab-gates" aria-selected="false" data-tab="gates">Gates</button>
+    <button role="tab" id="tab-stats" aria-selected="false" data-tab="stats">Stats</button>
+  </nav>
+
+  <main id="view"></main>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+const STATS={STR:"Hands",INT:"Knowledge",WIS:"Judgement",END:"Persistence",VIT:"Recovery"};
+const DAILY=[
+  {id:"cards",t:"Anatomy flashcards",d:"20 minutes",stat:"INT",xp:10},
+  {id:"rehearse",t:"Rehearse every case",d:"Steps, structures at risk, first 3 moves if it goes wrong. No list? Rehearse tomorrow's.",stat:"WIS",xp:10},
+  {id:"debrief",t:"Debrief every case",d:"3 lines: went well, was clumsy, do differently",stat:"STR",xp:10},
+];
+const SIDE={id:"move",t:"Side quest: move your body",d:"20 min walk, run or gym",stat:"VIT",xp:10};
+const DAILY_BONUS=15;
+const WEEKLY=[
+  {id:"approach",t:"Approach reading for this week's cases",d:"Monday, 45 min",stat:"INT",xp:25},
+  {id:"drill",t:"Microsurgical skills drill",d:"Tuesday, 45 min",stat:"STR",xp:30},
+  {id:"research",t:"Research hour",d:"Wednesday, 60 min",stat:"END",xp:30},
+  {id:"fcs",t:"FCS topic reading",d:"Thursday, 45 min",stat:"INT",xp:25},
+  {id:"crisis",t:"Crisis rehearsal",d:"Friday: sinus bleed, rupture, brain swelling",stat:"WIS",xp:20},
+  {id:"consult",t:"Take a solo-case question to a consultant",d:"After any night case",stat:"WIS",xp:20},
+  {id:"deep",t:"Deep block: research or FCS",d:"Saturday morning, 90 min",stat:"END",xp:40},
+  {id:"famfri",t:"Family evening",d:"Friday, protected",stat:"VIT",xp:25},
+  {id:"famsat",t:"Family Saturday afternoon",d:"Phone away",stat:"VIT",xp:25},
+  {id:"review",t:"Sunday review",d:"Count blocks, plan next week's cases",stat:"WIS",xp:15},
+];
+const WEEK_BONUS=100;
+const DUNGEONS=[
+  {id:"trauma",t:"Trauma",d:"Trauma craniotomy, DECRA, burr holes"},
+  {id:"cspine",t:"Cervical spine",d:"ACDF, posterior cervical fixation"},
+  {id:"tlspine",t:"Thoracolumbar spine",d:"Laminectomy, pedicle screws, discectomy"},
+  {id:"vascular",t:"Vascular",d:"Pterional, orbitozygomatic, aneurysm and AVM"},
+  {id:"supra",t:"Supratentorial tumours",d:"Convexity, parasagittal, interhemispheric"},
+  {id:"pfossa",t:"Posterior fossa and skull base",d:"Retrosigmoid, suboccipital, CSF leak"},
+  {id:"paeds",t:"Paediatrics and CSF",d:"VP shunt, ETV, myelomeningocele"},
+  {id:"func",t:"Functional, nerve, infection",d:"Empyema, abscess, carpal tunnel"},
+];
+const DUNGEON_XP=120;
+const BOSSES=[
+  {id:"registrar",t:"Registrar post begins",stat:"END",xp:300},
+  {id:"paper",t:"Aneurysm/HIV paper submitted",stat:"END",xp:400},
+  {id:"protocol",t:"MMed protocol approved",stat:"END",xp:300},
+  {id:"data",t:"MMed data collection complete",stat:"END",xp:300},
+  {id:"fcs",t:"FCS final passed",stat:"INT",xp:1000},
+  {id:"consultant",t:"Consultant post",stat:"WIS",xp:1000},
+];
+const RANKS=[
+  {r:"E",t:"Medical officer",need:[]},
+  {r:"D",t:"Registrar",need:["registrar"]},
+  {r:"C",t:"Paper submitted, MMed approved",need:["registrar","paper","protocol"]},
+  {r:"B",t:"MMed data complete",need:["registrar","paper","protocol","data"]},
+  {r:"A",t:"FCS final passed",need:["registrar","paper","protocol","data","fcs"]},
+  {r:"S",t:"Consultant",need:["registrar","paper","protocol","data","fcs","consultant"]},
+];
+
+const pad=n=>String(n).padStart(2,"0");
+const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const weekKey=d=>{const x=new Date(d);const wd=(x.getDay()+6)%7;return ymd(addDays(x,-wd))};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function blank(){return {start:ymd(new Date()),daily:{},weekly:{},dungeons:{},bosses:{}}}
+function norm(s){const b=blank();if(!s||typeof s!=="object")return b;
+  return {start:s.start||b.start,daily:s.daily||{},weekly:s.weekly||{},dungeons:s.dungeons||{},bosses:s.bosses||{}}}
+
+const LS="hunter-system-v1";
+let state=blank();
+try{const raw=localStorage.getItem(LS);if(raw)state=norm(JSON.parse(raw))}catch(e){}
+
+const cleared=day=>!!day&&DAILY.every(q=>day[q.id]);
+function compute(s){
+  const st={STR:0,INT:0,WIS:0,END:0,VIT:0};let bonus=0;
+  for(const k in s.daily){const day=s.daily[k];
+    for(const q of DAILY.concat(SIDE)) if(day[q.id]) st[q.stat]+=q.xp;
+    if(cleared(day)) bonus+=DAILY_BONUS;}
+  for(const k in s.weekly){const w=s.weekly[k];
+    for(const q of WEEKLY) if(w[q.id]) st[q.stat]+=q.xp;
+    if(WEEKLY.every(q=>w[q.id])) bonus+=WEEK_BONUS;}
+  for(const d of DUNGEONS) if(s.dungeons[d.id]) st.INT+=DUNGEON_XP;
+  for(const b of BOSSES) if(s.bosses[b.id]) st[b.stat]+=b.xp;
+  const total=Object.values(st).reduce((a,b)=>a+b,0)+bonus;
+  let rank=RANKS[0];for(const r of RANKS) if(r.need.every(id=>s.bosses[id])) rank=r;
+  return {st,total,rank};
+}
+function level(xp,base){let n=0;while(base*(n+1)*(n+2)/2<=xp)n++;
+  const lo=base*n*(n+1)/2,hi=base*(n+1)*(n+2)/2;return {lvl:n+1,into:xp-lo,need:hi-lo}}
+
+function streak(s){
+  const today=new Date();let d=today,n=0;
+  const ok=k=>{const day=s.daily[k];return cleared(day)||(day&&day.rest)};
+  if(!ok(ymd(d))) d=addDays(d,-1);
+  while(ok(ymd(d))){n++;d=addDays(d,-1)}
+  return n;
+}
+function penalty(s){
+  const t=new Date();const tk=ymd(t);
+  if(cleared(s.daily[tk])||(s.daily[tk]&&s.daily[tk].rest)) return false;
+  const k1=ymd(addDays(t,-1)),k2=ymd(addDays(t,-2));
+  if(k2<s.start) return false;
+  const miss=k=>{const day=s.daily[k];return !(cleared(day)||(day&&day.rest))};
+  return miss(k1)&&miss(k2);
+}
+
+let tab="today";
+try{const h=location.hash.slice(1);if(["today","week","gates","stats"].includes(h))tab=h}catch(e){}
+let resetArm=false,restoreOpen=false,backupShow=false;
+
+function questBtn(act,id,q,done,extra){
+  return `<button class="quest${done?" done":""}${extra||""}" data-act="${act}" data-id="${id}" aria-pressed="${done}">
+    <span class="box" aria-hidden="true">${done?"✓":""}</span>
+    <span class="qt">${esc(q.t)}<span class="qd">${esc(q.d||"")}</span></span>
+    <span class="rew">+${q.xp} XP<small>${q.stat||""}</small></span></button>`;
+}
+
+function render(){
+  const c=compute(state),L=level(c.total,100);
+  document.getElementById("rank").textContent=c.rank.r;
+  document.getElementById("lvl").textContent=L.lvl;
+  document.getElementById("xpText").textContent=`${L.into} / ${L.need} XP`;
+  document.getElementById("xpBar").style.width=(100*L.into/L.need).toFixed(1)+"%";
+  document.getElementById("streak").textContent=streak(state);
+  document.getElementById("total").textContent=c.total.toLocaleString();
+  document.getElementById("penalty").hidden=!penalty(state);
+  document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===tab)));
+  const v=document.getElementById("view");
+  const now=new Date(),tk=ymd(now),wk=weekKey(now);
+  if(tab==="today"){
+    const day=state.daily[tk]||{};
+    const done=DAILY.filter(q=>day[q.id]).length;
+    let strip="";for(let i=13;i>=0;i--){const k=ymd(addDays(now,-i)),d=state.daily[k];
+      let cls=cleared(d)?"c":(d&&d.rest)?"r":(k<state.start||i===0)?"":"m";if(i===0)cls+=" t";strip+=`<i class="${cls}" title="${k}"></i>`}
+    v.innerHTML=`<section class="win">
+      <div class="qhead"><div><div class="eyebrow">Daily quest</div><h2>${now.toLocaleDateString("en-ZA",{weekday:"long",day:"numeric",month:"long"})}</h2></div>
+      <span class="mono muted">${done}/${DAILY.length}</span></div>
+      <div class="qlist">${DAILY.map(q=>questBtn("daily",q.id,q,!!day[q.id])).join("")}${questBtn("daily",SIDE.id,SIDE,!!day[SIDE.id]," side")}</div>
+      ${cleared(day)?`<p class="foot"><span class="clear">Daily quest cleared</span> · +${DAILY_BONUS} XP bonus</p>`:`<p class="foot">Clear the three core quests for a +${DAILY_BONUS} XP bonus.</p>`}
+      <button class="restbtn${day.rest?" on":""}" data-act="rest" aria-pressed="${!!day.rest}">${day.rest?"Rest day set: streak protected":"Post-call or sick? Mark rest day"}</button>
+    </section>
+    <section class="win"><div class="eyebrow">Last 14 days</div>
+      <div class="strip">${strip}</div>
+      <div class="legend"><span class="lc">Cleared</span><span class="lr">Rest</span><span class="lm">Missed</span></div></section>`;
+  }else if(tab==="week"){
+    const w=state.weekly[wk]||{};const n=WEEKLY.filter(q=>w[q.id]).length;
+    const mon=new Date(wk+"T00:00:00");
+    v.innerHTML=`<section class="win">
+      <div class="qhead"><div><div class="eyebrow">Weekly quests</div><h2>Week of ${mon.toLocaleDateString("en-ZA",{day:"numeric",month:"short"})}</h2></div>
+      <span class="mono muted">${n}/${WEEKLY.length}</span></div>
+      <div class="qlist">${WEEKLY.map(q=>questBtn("weekly",q.id,q,!!w[q.id])).join("")}</div>
+      ${n===WEEKLY.length?`<p class="foot"><span class="clear">Week cleared</span> · +${WEEK_BONUS} XP bonus</p>`:`<p class="foot">Clear every weekly quest for +${WEEK_BONUS} XP. Heavy call week? The minimum is approach reading, research hour and both family blocks.</p>`}
+    </section>`;
+  }else if(tab==="gates"){
+    const next=DUNGEONS.find(d=>!state.dungeons[d.id]);
+    v.innerHTML=`<section class="win">
+      <div class="qhead"><div><div class="eyebrow">Dungeons · one per month</div><h2>Reading gates</h2></div>
+      <span class="mono muted">${DUNGEONS.filter(d=>state.dungeons[d.id]).length}/${DUNGEONS.length}</span></div>
+      <p class="muted" style="margin:0 0 10px;font-size:13px">A gate clears when you finish its FCS past-paper questions.${next?` Current gate: <b style="color:var(--ice)">${esc(next.t)}</b>.`:""}</p>
+      <div class="qlist">${DUNGEONS.map(d=>questBtn("dungeon",d.id,{t:d.t,d:d.d,xp:DUNGEON_XP,stat:"INT"},!!state.dungeons[d.id])).join("")}</div>
+    </section>
+    <section class="win"><div class="qhead"><div><div class="eyebrow">Boss fights</div><h2>Milestones</h2></div></div>
+      <div class="qlist">${BOSSES.map(b=>questBtn("boss",b.id,{t:b.t,d:state.bosses[b.id]?"Defeated "+state.bosses[b.id]:"Not yet",xp:b.xp,stat:b.stat},!!state.bosses[b.id])).join("")}</div>
+    </section>`;
+  }else{
+    const curIdx=RANKS.indexOf(c.rank);
+    v.innerHTML=`<section class="win"><div class="eyebrow">Attributes</div>
+      <div class="stats" style="margin-top:12px">${Object.keys(STATS).map(k=>{const s=level(c.st[k],40);
+        return `<div class="stat"><span class="k">${k}</span><div><div class="n">${STATS[k]} <span class="muted mono" style="font-size:12px">${c.st[k]} XP</span></div>
+        <div class="bar"><i style="width:${(100*s.into/s.need).toFixed(1)}%"></i></div></div><span class="lv">LV ${s.lvl}</span></div>`}).join("")}</div>
+    </section>
+    <section class="win"><div class="eyebrow">Rank ladder</div>
+      <div class="ranks" style="margin-top:10px">${RANKS.map((r,i)=>`<div class="rk${i<=curIdx?" got":""}${i===curIdx?" cur":""}"><b>${r.r}</b><span>${esc(r.t)}${i===curIdx?" · current":""}</span></div>`).join("")}</div>
+      <p class="foot">Ranks rise only from boss fights, never from case numbers.</p>
+    </section>
+    <section class="win"><div class="eyebrow">System</div>
+      <p class="muted" style="margin:8px 0 0;font-size:13px">Progress lives on this phone. Copy a backup code now and then, and keep it in Notes.</p>
+      <div class="danger"><button class="btn" data-act="backup">Copy backup code</button><button class="btn" data-act="restoreOpen">Restore from code</button></div>
+      ${restoreOpen?`<div style="margin-top:10px"><label for="restoreBox" class="muted" style="font-size:13px">Paste your backup code</label><textarea id="restoreBox"></textarea><div class="danger"><button class="btn" data-act="restoreDo">Restore</button><button class="btn" data-act="restoreNo">Cancel</button></div></div>`:""}
+      ${backupShow?`<div style="margin-top:10px"><label for="backupBox" class="muted" style="font-size:13px">Your backup code (select and copy)</label><textarea id="backupBox" readonly>${esc(JSON.stringify(state))}</textarea></div>`:""}
+      <div class="danger">${resetArm?`<span class="muted" style="font-size:13px">Erase all progress?</span><button class="btn red" data-act="resetYes">Erase</button><button class="btn" data-act="resetNo">Keep</button>`:`<button class="btn" data-act="resetArm">Reset progress</button>`}</div>
+    </section>`;
+  }
+}
+
+let toastT;
+function toast(title,sub){const t=document.getElementById("toast");t.innerHTML=esc(title)+(sub?`<small>${esc(sub)}</small>`:"");
+  t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2600)}
+
+document.addEventListener("click",e=>{
+  const tb=e.target.closest("[data-tab]");if(tb){tab=tb.dataset.tab;resetArm=false;render();return}
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const act=b.dataset.act,id=b.dataset.id;
+  if(act==="backup"){const txt=JSON.stringify(state);
+    const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject();
+    p.then(()=>toast("Backup copied","Paste it into Notes")).catch(()=>{backupShow=true;render();const b=document.getElementById("backupBox");if(b){b.focus();b.select()}});return}
+  if(act==="restoreOpen"){restoreOpen=true;backupShow=false;render();return}
+  if(act==="restoreNo"){restoreOpen=false;render();return}
+  if(act==="restoreDo"){const b=document.getElementById("restoreBox");
+    try{const obj=JSON.parse(b.value.trim());if(!obj||typeof obj!=="object"||!obj.daily)throw 0;state=norm(obj);restoreOpen=false;save();render();toast("Progress restored","")}
+    catch(e){toast("That code didn't work","Copy the whole backup code and try again")}return}
+  if(act==="resetArm"){resetArm=true;render();return}
+  if(act==="resetNo"){resetArm=false;render();return}
+  const before=compute(state),bl=level(before.total,100).lvl;
+  const now=new Date(),tk=ymd(now),wk=weekKey(now);
+  if(act==="resetYes"){state=blank();resetArm=false}
+  else if(act==="daily"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);d[id]=!d[id];if(!d[id])delete d[id]}
+  else if(act==="rest"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);d.rest=!d.rest;if(!d.rest)delete d.rest}
+  else if(act==="weekly"){const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);w[id]=!w[id];if(!w[id])delete w[id]}
+  else if(act==="dungeon"){if(state.dungeons[id])delete state.dungeons[id];else state.dungeons[id]=tk}
+  else if(act==="boss"){if(state.bosses[id])delete state.bosses[id];else state.bosses[id]=tk}
+  const after=compute(state),al=level(after.total,100).lvl;
+  if(after.rank.r!==before.rank.r&&RANKS.indexOf(after.rank)>RANKS.indexOf(before.rank)) toast("Rank up: "+after.rank.r,after.rank.t);
+  else if(al>bl) toast("Level up",`You are now level ${al}`);
+  else if(act==="daily"&&cleared(state.daily[tk])&&DAILY.some(q=>q.id===id)&&state.daily[tk][id]) toast("Daily quest cleared",`+${DAILY_BONUS} XP bonus`);
+  else if(act==="dungeon"&&state.dungeons[id]) toast("Gate cleared",`+${DUNGEON_XP} INT`);
+  else if(act==="boss"&&state.bosses[id]) toast("Boss defeated","Reward claimed");
+  render();save();
+});
+
+/* persistence: this phone only */
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){document.getElementById("sync").textContent="Couldn't save"}}
+render();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
+if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+})();
+</script>
+</body>
+</html>
