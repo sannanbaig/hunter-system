@@ -567,7 +567,7 @@ function compute(s){
   const bestWeek=Math.max(0,...Object.values(wk));
   const c={st,statInfo,statLv,total,L,sp,spent,rank,title,wk,quests,daysCleared,perfectDays,callClears,hidden,weeksCleared,perfectWeeks,
     gates,bossCount,bestStreak:Math.max(best,cur),streak:cur,bestWeekRun,bestWeek,job:s.job,
-    mastered,decksKnown,ds,cases:s.cases.length,roleUps,asked};
+    mastered,decksKnown,ds,cases:s.cases.filter(x=>!x.imported).length,imported:s.cases.filter(x=>x.imported).length,roleUps,asked};
   c.ach=ACH.filter(a=>a.test(c)).map(a=>a.id);
   return c;
 }
@@ -718,6 +718,9 @@ function normDate(t){t=(t||"").trim();let m;
 function parseImport(txt){
   txt=txt.trim();if(!txt)return [];
   if(/^HSCASES:/.test(txt))txt=txt.slice(8).trim();
+  if(txt[0]==="{"){const o=JSON.parse(txt);const P=o.p||[];const CI=["trauma","cspine","tlspine","vascular","tumour","pfossa","paeds","func","infection","other"];
+    return (o.c||[]).map((r,k)=>({id:"i"+uid()+k,date:r[0],proc:String(P[r[1]]||"Case").slice(0,80),cat:CI[r[2]]||"other",role:r[4]&&ROLES.some(x=>x.id===r[4])?r[4]:"s2s",
+      diff:3,solo:false,good:"",bad:"",next:"",tags:[],q:"",outcome:r[3]?String(r[3]).slice(0,200):"",imported:true})).filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.date))}
   if(txt[0]==="["){const arr=JSON.parse(txt);return arr.map(x=>({id:x.id||"i"+uid(),date:normDate(x.date)||x.date,proc:String(x.proc||"Case").slice(0,80),
     cat:CATS.some(c=>c.id===x.cat)?x.cat:pickCat(x.cat||x.proc),role:ROLES.some(r=>r.id===x.role)?x.role:pickRole(x.role),
     diff:+x.diff||3,solo:!!x.solo,good:"",bad:"",next:"",tags:[],q:"",imported:true})).filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.date))}
@@ -758,7 +761,8 @@ function renderCases(){
       </div></section>`;
   }
   // insights
-  const total=cases.length;
+  const total=cases.length,debriefed=cases.filter(x=>!x.imported).length,imp=total-debriefed;
+  const withOutcome=cases.filter(x=>x.outcome);
   const byCat=CATS.map(cat=>{const xs=cases.filter(x=>x.cat===cat.id);return {cat,n:xs.length,roles:ROLES.map(r=>xs.filter(x=>x.role===r.id).length)}}).filter(x=>x.n);
   const maxN=Math.max(1,...byCat.map(x=>x.n));
   const last=cases.slice(0,10);const tc={};for(const x of last)for(const t of (x.tags||[]))tc[t]=(tc[t]||0)+1;
@@ -766,25 +770,28 @@ function renderCases(){
   const open=cases.filter(x=>x.q&&!x.asked);
   const ROLE_COL=["r0","r1","r2","r3","r4"];
   return `${form}
-    ${caseForm?"":`<section class="win"><div class="qhead"><div><div class="eyebrow">Case log</div><h2>${total} case${total===1?"":"s"} debriefed</h2></div></div>
+    ${caseForm?"":`<section class="win"><div class="qhead"><div><div class="eyebrow">Case log</div><h2>${debriefed} debriefed${imp?` · ${imp} from logbook`:""}</h2></div></div>
       <p class="small muted">Logging a case with its debrief clears today's debrief quest. XP comes from growth, like your first skin-to-skin in a category, not from case numbers.</p>
       <button class="big" data-act="caseNew">Log a case</button>
       ${importOpen?`<div class="form"><div class="field"><label for="impBox">Paste an import code, or one case per line</label>
         <textarea id="impBox" class="inp" style="min-height:120px" placeholder="2026-09-14, ACDF C5/6, cervical spine, skin to skin"></textarea></div>
         <p class="small muted">Line format: date, procedure, category, role. Categories: trauma, cervical, lumbar, vascular, tumour, posterior fossa, paeds, nerve, infection. Roles: observed, assisted, parts, skin to skin, taught. Imported cases fill your logbook but don't tick past debrief quests.</p>
+        <div class="field"><label for="impFile">Or choose an import file</label><input id="impFile" type="file" accept=".txt,.json,text/plain,application/json" class="inp" style="font-size:14px"></div>
         <div class="danger"><button class="btn gold" data-act="importDo">Import</button><button class="btn" data-act="importNo">Cancel</button></div></div>`
         :`<div class="danger" style="justify-content:center"><button class="link" data-act="importOpen">Import cases from your logbook</button></div>`}</section>`}
     ${open.length?`<section class="win"><div class="eyebrow">Questions to ask</div><div class="qlist" style="margin-top:10px">${open.map(x=>`<div class="q"><span class="small" style="min-width:0">${esc(x.q)}<span class="qd">${esc(x.proc)} · ${fmt(x.date,{day:"numeric",month:"short"})}</span></span><button class="btn gold" data-act="asked" data-id="${esc(x.id)}">Asked</button></div>`).join("")}</div>
       <p class="foot">Marking one as asked ticks this week's consultant quest.</p></section>`:""}
     ${topW.length?`<section class="win"><div class="eyebrow">Recurring weaknesses</div><p class="small muted" style="margin-top:4px">From your last ${last.length} debriefs.</p>
       <div class="weak">${topW.map(([id,n])=>{const w=WEAK.find(x=>x.id===id);return w?`<div class="w"><b>${esc(w.t)}</b> <span class="mono small muted">${n} of ${last.length}</span><p class="small" style="margin-top:4px">${esc(w.drill)}</p></div>`:""}).join("")}</div></section>`:""}
+    ${withOutcome.length?`<section class="win"><div class="eyebrow">Complications to learn from</div><p class="small muted" style="margin-top:4px">${withOutcome.length} case${withOutcome.length===1?"":"s"} with an outcome noted. Review these before similar cases.</p>
+      <div class="qlist" style="margin-top:10px">${withOutcome.slice(0,12).map(x=>`<div class="q" style="grid-template-columns:1fr"><span class="small" style="min-width:0"><b>${esc(x.proc)}</b> · ${fmt(x.date,{day:"numeric",month:"short",year:"numeric"})}<span class="qd">${esc(x.outcome)}</span></span></div>`).join("")}</div></section>`:""}
     ${byCat.length?`<section class="win"><div class="eyebrow">Logbook by category</div>
       <div class="cats">${byCat.map(x=>`<div class="cat"><span>${esc(x.cat.t)}</span><span class="stack" style="width:${(100*x.n/maxN).toFixed(0)}%">${x.roles.map((n,i)=>n?`<i class="${ROLE_COL[i]}" style="flex:${n}"></i>`:"").join("")}</span><span class="mono small" style="text-align:right">${x.n}</span></div>`).join("")}</div>
       <div class="rlegend">${ROLES.map((r,i)=>`<span style="--c:${["#3a4f78","#4f7fc2","var(--glow)","var(--ok)","var(--gold)"][i]}">${esc(r.t)}</span>`).join("")}</div></section>`:""}
     ${total?`<section class="win"><div class="eyebrow">Recent cases</div><div class="qlist" style="margin-top:10px">${cases.slice(0,25).map(x=>{const cat=CATS.find(c=>c.id===x.cat),role=ROLES.find(r=>r.id===x.role);const open=caseOpen===x.id;
       return `<div class="case"><div class="top"><b>${esc(x.proc||"Case")}</b><span class="meta">${fmt(x.date,{day:"numeric",month:"short"})}</span></div>
-        <div class="meta">${esc(cat?cat.t:"")} · ${esc(role?role.t:"")}${x.imported?" · from logbook":` · difficulty ${x.diff}`}${x.solo?" · solo":""}</div>
-        ${open?`<dl>${x.good?`<dt>Went well</dt><dd>${esc(x.good)}</dd>`:""}${x.bad?`<dt>Clumsy</dt><dd>${esc(x.bad)}</dd>`:""}${x.next?`<dt>Next time</dt><dd>${esc(x.next)}</dd>`:""}${(x.tags||[]).length?`<dt>Tags</dt><dd>${x.tags.map(t=>esc((WEAK.find(w=>w.id===t)||{}).t||t)).join(", ")}</dd>`:""}${x.q?`<dt>Question</dt><dd>${esc(x.q)}${x.asked?" (asked)":""}</dd>`:""}</dl>
+        <div class="meta">${esc(cat?cat.t:"")} · ${esc(role?role.t:"")}${x.imported?" · from logbook":` · difficulty ${x.diff}`}${x.solo?" · solo":""}${x.outcome?' · <span style="color:var(--red)">outcome noted</span>':""}</div>
+        ${open?`<dl>${x.good?`<dt>Went well</dt><dd>${esc(x.good)}</dd>`:""}${x.bad?`<dt>Clumsy</dt><dd>${esc(x.bad)}</dd>`:""}${x.next?`<dt>Next time</dt><dd>${esc(x.next)}</dd>`:""}${x.outcome?`<dt>Outcome</dt><dd>${esc(x.outcome)}</dd>`:""}${(x.tags||[]).length?`<dt>Tags</dt><dd>${x.tags.map(t=>esc((WEAK.find(w=>w.id===t)||{}).t||t)).join(", ")}</dd>`:""}${x.q?`<dt>Question</dt><dd>${esc(x.q)}${x.asked?" (asked)":""}</dd>`:""}</dl>
           <div class="danger">${caseDel===x.id?`<span class="small muted">Delete this case?</span><button class="btn red" data-act="caseDelYes" data-id="${esc(x.id)}">Delete</button><button class="btn" data-act="caseDelNo">Keep</button>`:`<button class="btn" data-act="caseDel" data-id="${esc(x.id)}">Delete</button>`}<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">Hide</button></div>`
           :`<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">${x.imported?"Details":"Show debrief"}</button>`}</div>`}).join("")}</div></section>`:""}`;
 }
@@ -913,7 +920,7 @@ function render(){
     const dlt=(a,b)=>{const x=a-b;return x===0?`<span class="d muted">same as last week</span>`:`<span class="d ${x>0?"up":"down"}">${x>0?"▲":"▼"} ${Math.abs(x)} vs last week</span>`};
     const twx=c.wk[wk]||0,lwx=c.wk[lastWk]||0;
     const rv=revIn(wk,7),rvl=revIn(lastWk,7);
-    const casesWk=state.cases.filter(x=>weekKey(parse(x.date))===wk).length,casesLw=state.cases.filter(x=>weekKey(parse(x.date))===lastWk).length;
+    const casesWk=state.cases.filter(x=>!x.imported&&weekKey(parse(x.date))===wk).length,casesLw=state.cases.filter(x=>!x.imported&&weekKey(parse(x.date))===lastWk).length;
     const daysSince=Math.round((parse(tk)-parse(state.start))/864e5)+1;
     const avg=Math.round(c.total/Math.max(1,daysSince/7));
     const toNext=c.L.need-c.L.into;
@@ -1065,8 +1072,9 @@ document.addEventListener("click",e=>{
     let rows;try{rows=parseImport(val("impBox"))}catch(err){toast("Couldn't read that","Check the code was copied in full");return}
     const tkd=ymd(new Date());rows=rows.filter(r=>r.date<=tkd);
     if(!rows.length){toast("No cases found","Each line needs a date and a procedure");return}
-    const have=new Set(state.cases.map(x=>x.date+"|"+x.proc.toLowerCase()));
-    const add=rows.filter(r=>{const k=r.date+"|"+r.proc.toLowerCase();if(have.has(k))return false;have.add(k);return true});
+    // same procedure on the same day can happen more than once: compare counts, not just names
+    const cnt={};for(const x of state.cases){const k=x.date+"|"+x.proc.toLowerCase();cnt[k]=(cnt[k]||0)+1}
+    const seenNew={};const add=rows.filter(r=>{const k=r.date+"|"+r.proc.toLowerCase();seenNew[k]=(seenNew[k]||0)+1;return seenNew[k]>(cnt[k]||0)});
     state.cases.push(...add);importOpen=false;
     msgs.push([`${add.length} case${add.length===1?"":"s"} imported`,rows.length-add.length?`${rows.length-add.length} already in your log`:""]);
   }
@@ -1090,6 +1098,10 @@ document.addEventListener("click",e=>{
   render();save();
   if(act==="saveCase"||act==="saveCard"||act==="delCard")window.scrollTo({top:0});
 });
+
+document.addEventListener("change",e=>{if(e.target&&e.target.id==="impFile"&&e.target.files&&e.target.files[0]){
+  const f=e.target.files[0];if(f.size>2e6){toast("That file is too big","");return}
+  const r=new FileReader();r.onload=()=>{const box=document.getElementById("impBox");if(box){box.value=String(r.result);toast("File loaded","Tap Import to add the cases")}};r.readAsText(f)}});
 
 /* ---------- persistence: this phone only ---------- */
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){toast("Couldn't save","Storage is full or blocked")}}
