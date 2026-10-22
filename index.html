@@ -586,7 +586,7 @@ let resetArm=false,restoreOpen=false,backupShow=false,jobPick=false;
 let session=null;           // {queue:[ids], idx, shown, done, deck}
 let studyView="home";       // home | add | edit | browse
 let browseDeck=null, editId=null, delArm=null;
-let caseForm=false, caseDel=null, caseOpen=null;
+let caseForm=false, caseDel=null, caseOpen=null, importOpen=false;
 
 function questBtn(act,id,q,done,cls,tag){
   return `<button class="quest${done?" done":""}${cls||""}" data-act="${act}" data-id="${id}" aria-pressed="${done}">
@@ -701,6 +701,33 @@ function renderCardForm(byId){
       </div></section>`;
   }
 
+/* ---------- logbook import ---------- */
+function pickCat(t){t=(t||"").toLowerCase();
+  const m=[["cspine",/cerv|acdf|c\d|neck/],["tlspine",/lumb|thorac|tl\b|l\d|lamin|discect|pedicle|spine/],["vascular",/vasc|aneur|avm|clip|cavern/],
+    ["tumour",/tum|onc|glio|mening|mets|metast|pituit|crani.*tumou?r/],["pfossa",/fossa|skull ?base|retrosig|cpa|chiari|subocc/],
+    ["paeds",/paed|ped|shunt|vp|etv|csf|hydro|myelo|crani.*synost/],["func",/nerve|carpal|ulnar|functional|dbs|pain/],
+    ["infection",/infect|abscess|empyema|tb\b|osteomy/],["trauma",/trauma|tbi|sdh|edh|burr|decra|decompress|haematoma|hematoma|crani/]];
+  for(const [id,re] of m) if(re.test(t)) return id; return "other"}
+function pickRole(t){t=(t||"").toLowerCase();
+  if(/teach|taught|supervis/.test(t))return "teach";if(/skin|s2s|primary|lead|surgeon|solo|perform/.test(t))return "s2s";
+  if(/part|portion|some/.test(t))return "parts";if(/obs|watch/.test(t))return "obs";return "assist"}
+function normDate(t){t=(t||"").trim();let m;
+  if(m=t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))return `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+  if(m=t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{2,4})$/)){const y=m[3].length===2?"20"+m[3]:m[3];return `${y}-${pad(+m[2])}-${pad(+m[1])}`}
+  return null}
+function parseImport(txt){
+  txt=txt.trim();if(!txt)return [];
+  if(/^HSCASES:/.test(txt))txt=txt.slice(8).trim();
+  if(txt[0]==="["){const arr=JSON.parse(txt);return arr.map(x=>({id:x.id||"i"+uid(),date:normDate(x.date)||x.date,proc:String(x.proc||"Case").slice(0,80),
+    cat:CATS.some(c=>c.id===x.cat)?x.cat:pickCat(x.cat||x.proc),role:ROLES.some(r=>r.id===x.role)?x.role:pickRole(x.role),
+    diff:+x.diff||3,solo:!!x.solo,good:"",bad:"",next:"",tags:[],q:"",imported:true})).filter(x=>/^\d{4}-\d\d-\d\d$/.test(x.date))}
+  const out=[];
+  for(const line of txt.split(/\n+/)){const p=line.split(/\t|;|,(?=\s*\S)/).map(x=>x.trim());if(p.length<2)continue;
+    const date=normDate(p[0]);if(!date)continue;
+    out.push({id:"i"+uid()+out.length,date,proc:(p[1]||"Case").slice(0,80),cat:pickCat(p[2]||p[1]),role:pickRole(p[3]||""),diff:3,solo:/solo/i.test(line),
+      good:"",bad:"",next:"",tags:[],q:"",imported:true})}
+  return out}
+
 /* ---------- cases view ---------- */
 function renderCases(){
   const today=ymd(new Date());
@@ -741,7 +768,12 @@ function renderCases(){
   return `${form}
     ${caseForm?"":`<section class="win"><div class="qhead"><div><div class="eyebrow">Case log</div><h2>${total} case${total===1?"":"s"} debriefed</h2></div></div>
       <p class="small muted">Logging a case with its debrief clears today's debrief quest. XP comes from growth, like your first skin-to-skin in a category, not from case numbers.</p>
-      <button class="big" data-act="caseNew">Log a case</button></section>`}
+      <button class="big" data-act="caseNew">Log a case</button>
+      ${importOpen?`<div class="form"><div class="field"><label for="impBox">Paste an import code, or one case per line</label>
+        <textarea id="impBox" class="inp" style="min-height:120px" placeholder="2026-09-14, ACDF C5/6, cervical spine, skin to skin"></textarea></div>
+        <p class="small muted">Line format: date, procedure, category, role. Categories: trauma, cervical, lumbar, vascular, tumour, posterior fossa, paeds, nerve, infection. Roles: observed, assisted, parts, skin to skin, taught. Imported cases fill your logbook but don't tick past debrief quests.</p>
+        <div class="danger"><button class="btn gold" data-act="importDo">Import</button><button class="btn" data-act="importNo">Cancel</button></div></div>`
+        :`<div class="danger" style="justify-content:center"><button class="link" data-act="importOpen">Import cases from your logbook</button></div>`}</section>`}
     ${open.length?`<section class="win"><div class="eyebrow">Questions to ask</div><div class="qlist" style="margin-top:10px">${open.map(x=>`<div class="q"><span class="small" style="min-width:0">${esc(x.q)}<span class="qd">${esc(x.proc)} · ${fmt(x.date,{day:"numeric",month:"short"})}</span></span><button class="btn gold" data-act="asked" data-id="${esc(x.id)}">Asked</button></div>`).join("")}</div>
       <p class="foot">Marking one as asked ticks this week's consultant quest.</p></section>`:""}
     ${topW.length?`<section class="win"><div class="eyebrow">Recurring weaknesses</div><p class="small muted" style="margin-top:4px">From your last ${last.length} debriefs.</p>
@@ -751,10 +783,10 @@ function renderCases(){
       <div class="rlegend">${ROLES.map((r,i)=>`<span style="--c:${["#3a4f78","#4f7fc2","var(--glow)","var(--ok)","var(--gold)"][i]}">${esc(r.t)}</span>`).join("")}</div></section>`:""}
     ${total?`<section class="win"><div class="eyebrow">Recent cases</div><div class="qlist" style="margin-top:10px">${cases.slice(0,25).map(x=>{const cat=CATS.find(c=>c.id===x.cat),role=ROLES.find(r=>r.id===x.role);const open=caseOpen===x.id;
       return `<div class="case"><div class="top"><b>${esc(x.proc||"Case")}</b><span class="meta">${fmt(x.date,{day:"numeric",month:"short"})}</span></div>
-        <div class="meta">${esc(cat?cat.t:"")} · ${esc(role?role.t:"")} · difficulty ${x.diff}${x.solo?" · solo":""}</div>
+        <div class="meta">${esc(cat?cat.t:"")} · ${esc(role?role.t:"")}${x.imported?" · from logbook":` · difficulty ${x.diff}`}${x.solo?" · solo":""}</div>
         ${open?`<dl>${x.good?`<dt>Went well</dt><dd>${esc(x.good)}</dd>`:""}${x.bad?`<dt>Clumsy</dt><dd>${esc(x.bad)}</dd>`:""}${x.next?`<dt>Next time</dt><dd>${esc(x.next)}</dd>`:""}${(x.tags||[]).length?`<dt>Tags</dt><dd>${x.tags.map(t=>esc((WEAK.find(w=>w.id===t)||{}).t||t)).join(", ")}</dd>`:""}${x.q?`<dt>Question</dt><dd>${esc(x.q)}${x.asked?" (asked)":""}</dd>`:""}</dl>
           <div class="danger">${caseDel===x.id?`<span class="small muted">Delete this case?</span><button class="btn red" data-act="caseDelYes" data-id="${esc(x.id)}">Delete</button><button class="btn" data-act="caseDelNo">Keep</button>`:`<button class="btn" data-act="caseDel" data-id="${esc(x.id)}">Delete</button>`}<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">Hide</button></div>`
-          :`<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">Show debrief</button>`}</div>`}).join("")}</div></section>`:""}`;
+          :`<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">${x.imported?"Details":"Show debrief"}</button>`}</div>`}).join("")}</div></section>`:""}`;
 }
 
 /* ---------- main render ---------- */
@@ -949,6 +981,8 @@ document.addEventListener("click",e=>{
   if(act==="goCase"){caseForm=true;go("cases");return}
   if(act==="caseNew"){caseForm=true;render();window.scrollTo({top:0});return}
   if(act==="caseCancel"){caseForm=false;render();return}
+  if(act==="importOpen"){importOpen=true;render();return}
+  if(act==="importNo"){importOpen=false;render();return}
   if(act==="caseToggle"){caseOpen=caseOpen===id?null:id;caseDel=null;render();return}
   if(act==="caseDel"){caseDel=id;render();return}
   if(act==="caseDelNo"){caseDel=null;render();return}
@@ -1026,6 +1060,15 @@ document.addEventListener("click",e=>{
     if(cs.good||cs.bad||cs.next){const d=state.daily[date]=Object.assign({},state.daily[date]);if(!d.debrief){d.debrief=true;if(date===tk)msgs.push(["Debrief quest cleared",""])}}
     else msgs.push(["Case saved","Add your three debrief lines next time to clear the quest"]);
     caseForm=false;
+  }
+  else if(act==="importDo"){
+    let rows;try{rows=parseImport(val("impBox"))}catch(err){toast("Couldn't read that","Check the code was copied in full");return}
+    const tkd=ymd(new Date());rows=rows.filter(r=>r.date<=tkd);
+    if(!rows.length){toast("No cases found","Each line needs a date and a procedure");return}
+    const have=new Set(state.cases.map(x=>x.date+"|"+x.proc.toLowerCase()));
+    const add=rows.filter(r=>{const k=r.date+"|"+r.proc.toLowerCase();if(have.has(k))return false;have.add(k);return true});
+    state.cases.push(...add);importOpen=false;
+    msgs.push([`${add.length} case${add.length===1?"":"s"} imported`,rows.length-add.length?`${rows.length-add.length} already in your log`:""]);
   }
   else if(act==="caseDelYes"){state.cases=state.cases.filter(x=>x.id!==id);caseDel=null;caseOpen=null}
   else if(act==="asked"){const x=state.cases.find(y=>y.id===id);if(x){x.asked=tk;const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);if(!w.consult){w.consult=true;msgs.push(["Consultant quest cleared","+20 WIS"])}}}

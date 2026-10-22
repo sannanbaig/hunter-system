@@ -11,8 +11,8 @@ It is a standalone web app. It works offline and saves progress on the phone it 
 - **Levels:** paced to training. At about 400 XP a week, level 20 takes about 4 months, level 50 about 1.7 years and level 100 about 6 years.
 - **Ranks:** need both a level and the real milestones (registrar, paper, MMed, FCS, consultant).
 - **Study tab:** spaced-repetition flashcards (Again / Hard / Good / Easy) with a 114-card starter deck across anatomy and the eight gate themes. 10 new cards a day; reviewing 20, or everything due, clears the flashcard quest. A card held for 3 weeks is mastered (+3 INT). Add and edit your own cards.
-- **Cases tab:** log each case with role, difficulty and a 3-line debrief (no patient identifiers). Logging clears the debrief quest. Tag what went wrong to see recurring weaknesses with a targeted drill, and keep a list of questions for consultants. XP comes from operative growth (first time doing parts, skin to skin, teaching), never case numbers.
-- **Hunter tab:** titles, 3 skill points per level, a class at level 10 (adds a weekly class quest), 18 achievements.
+- **Cases tab:** log each case with role, difficulty and a 3-line debrief (no patient identifiers). Logging clears the debrief quest. Tag what went wrong to see recurring weaknesses with a targeted drill, and keep a list of questions for consultants. Import past cases from your logbook by pasting one case per line (date, procedure, category, role). XP comes from operative growth (first time doing parts, skin to skin, teaching), never case numbers.
+- **Hunter tab:** titles, 3 skill points per level, a class at level 10 (adds a weekly class quest), 26 achievements.
 - **Log tab:** weekly report, XP per week chart, 16-week heatmap, personal records.
 
 ## Install on iPhone
@@ -23,7 +23,7 @@ It is a standalone web app. It works offline and saves progress on the phone it 
 
 ## Backups
 
-Progress is stored on your phone only. Go to **Stats → Copy backup code** every week or two and paste the code into Notes. To move to a new phone, use **Restore from code**.
+Progress is stored on your phone only. Go to **Hunter → Copy backup code** every week or two and paste the code into Notes. To move to a new phone, use **Restore from code**.
 
 ## Files
 
