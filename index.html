@@ -80,9 +80,9 @@ p{margin:0}
 .penalty .eyebrow{color:var(--red)}
 
 /* Tabs */
-.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;
   background:var(--void);padding-block:8px}
-.tabs button{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:var(--panel);color:var(--mist);
+.tabs button{font-family:var(--display);font-size:11px;letter-spacing:.04em;text-transform:uppercase;background:var(--panel);color:var(--mist);
   border:1px solid var(--line);border-radius:2px;padding:10px 2px;cursor:pointer;min-width:0}
 .tabs button[aria-selected="true"]{color:var(--void);background:var(--glow);border-color:var(--glow);box-shadow:0 0 14px rgba(79,163,255,.5)}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
@@ -215,7 +215,68 @@ textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);bord
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .toast.v{border-color:var(--violet);color:var(--violet);box-shadow:0 0 30px rgba(180,140,255,.35)}
 .toast small{display:block;color:var(--ice);letter-spacing:.04em;text-transform:none;font-family:var(--body);margin-top:4px}
-@media (max-width:360px){.tabs button{font-size:10px;letter-spacing:.04em}.ach,.jobs{grid-template-columns:1fr}}
+/* study */
+.flash{border:1px solid var(--glow);border-radius:4px;background:rgba(7,11,22,.6);padding:20px 16px;min-height:200px;display:flex;flex-direction:column;gap:14px;
+  box-shadow:0 0 24px rgba(79,163,255,.15) inset}
+.flash .front{font-family:var(--display);font-size:20px;line-height:1.3;text-wrap:balance}
+.flash .back{font-size:16px;line-height:1.5;border-top:1px dashed var(--line);padding-top:14px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.grades button{font-family:var(--display);font-size:13px;letter-spacing:.06em;text-transform:uppercase;background:transparent;border:1px solid var(--line);
+  border-radius:2px;padding:10px 2px;cursor:pointer;color:var(--ice)}
+.grades button small{display:block;font-family:var(--mono);font-size:11px;color:var(--mist);text-transform:none;letter-spacing:0;margin-top:2px}
+.grades .g0{border-color:var(--red);color:var(--red)}
+.grades .g1{border-color:var(--gold);color:var(--gold)}
+.grades .g2{border-color:var(--ok);color:var(--ok)}
+.grades .g3{border-color:var(--glow);color:var(--glow)}
+.big{width:100%;font-family:var(--display);font-size:15px;letter-spacing:.1em;text-transform:uppercase;background:var(--glow);color:var(--void);
+  border:0;border-radius:2px;padding:14px;cursor:pointer;box-shadow:0 0 16px rgba(79,163,255,.4);margin-top:12px}
+.big.ghost{background:transparent;color:var(--glow);border:1px solid var(--glow);box-shadow:none}
+.decks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.deck{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;border:1px solid var(--line);border-radius:2px;padding:10px 12px;background:rgba(7,11,22,.5);
+  width:100%;text-align:left;color:inherit;font:inherit;cursor:pointer}
+.deck b{font-family:var(--display);font-size:14px;font-weight:600}
+.deck .bar{grid-column:1/-1;margin-top:0;height:5px}
+.deck .bar>i{background:linear-gradient(90deg,#2a9d7a,var(--ok));box-shadow:none}
+.due{font-family:var(--mono);font-size:12px;color:var(--gold);white-space:nowrap}
+.due.zero{color:var(--mist)}
+.link{background:none;border:0;color:var(--glow);font:inherit;font-size:13px;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.sbar{height:4px;background:rgba(79,163,255,.12);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.sbar i{display:block;height:100%;background:var(--glow)}
+
+/* forms */
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label,.flabel{font-size:12px;color:var(--mist);font-family:var(--display);letter-spacing:.08em;text-transform:uppercase}
+.inp{width:100%;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:10px;font:inherit;font-size:16px;min-width:0}
+.inp:focus{outline:none;border-color:var(--glow);box-shadow:0 0 0 2px rgba(79,163,255,.25)}
+textarea.inp{min-height:64px;font-family:var(--body);font-size:16px;margin:0;resize:vertical}
+.form{display:flex;flex-direction:column;gap:12px;margin-top:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tagb{font:inherit;font-size:13px;background:transparent;color:var(--mist);border:1px solid var(--line);border-radius:14px;padding:6px 10px;cursor:pointer}
+.tagb[aria-pressed="true"]{color:var(--void);background:var(--gold);border-color:var(--gold)}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px}
+.chk input{width:20px;height:20px;accent-color:var(--glow)}
+.note{font-size:12px;color:var(--mist);border-left:2px solid var(--gold);padding-left:8px}
+
+/* cases */
+.cats{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.cat{display:grid;grid-template-columns:110px 1fr 28px;gap:8px;align-items:center;font-size:13px}
+.cat .stack{display:flex;height:10px;border-radius:2px;overflow:hidden;background:rgba(79,163,255,.08)}
+.cat .stack i{display:block;height:100%}
+.r0{background:#3a4f78}.r1{background:#4f7fc2}.r2{background:var(--glow)}.r3{background:var(--ok)}.r4{background:var(--gold)}
+.rlegend{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;color:var(--mist)}
+.rlegend span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:4px;border-radius:2px;vertical-align:-1px;background:var(--c)}
+.weak{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.weak .w{border:1px solid var(--line);border-radius:2px;padding:10px;background:rgba(7,11,22,.5)}
+.weak .w b{font-family:var(--display);color:var(--gold)}
+.case{border:1px solid var(--line);border-radius:2px;padding:10px 12px;background:rgba(7,11,22,.5);font-size:14px}
+.case .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.case .top b{font-family:var(--display);font-size:15px;min-width:0}
+.case .meta{font-family:var(--mono);font-size:11px;color:var(--mist)}
+.case dl{margin:8px 0 0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px}
+.case dt{color:var(--mist)}.case dd{margin:0;min-width:0}
+.q{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border:1px dashed var(--line);border-radius:2px;padding:10px}
+@media (max-width:360px){.tabs button{font-size:10px;letter-spacing:.04em}.ach,.jobs{grid-template-columns:1fr}.cat{grid-template-columns:90px 1fr 24px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -246,8 +307,9 @@ textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);bord
 
   <nav class="tabs" role="tablist" aria-label="Sections">
     <button role="tab" id="tab-today" data-tab="today">Daily</button>
-    <button role="tab" id="tab-week" data-tab="week">Weekly</button>
-    <button role="tab" id="tab-gates" data-tab="gates">Gates</button>
+    <button role="tab" id="tab-study" data-tab="study">Study</button>
+    <button role="tab" id="tab-cases" data-tab="cases">Cases</button>
+    <button role="tab" id="tab-quests" data-tab="quests">Quests</button>
     <button role="tab" id="tab-hunter" data-tab="hunter">Hunter</button>
     <button role="tab" id="tab-log" data-tab="log">Log</button>
   </nav>
@@ -256,14 +318,15 @@ textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);bord
 </div>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="cards.js"></script>
 <script>
 (function(){
 /* ---------- content ---------- */
 const STATS={STR:"Hands",INT:"Knowledge",WIS:"Judgement",END:"Persistence",VIT:"Recovery"};
 const CORE=[
-  {id:"cards",t:"Anatomy flashcards",d:"20 minutes",stat:"INT",xp:10},
+  {id:"cards",t:"Flashcard review",d:"Review 20 cards, or every card due",stat:"INT",xp:10},
   {id:"rehearse",t:"Rehearse your next case",d:"Steps, structures at risk, first 3 moves if it goes wrong",stat:"WIS",xp:10},
-  {id:"debrief",t:"Debrief today's cases",d:"3 lines: went well, was clumsy, do differently",stat:"STR",xp:10},
+  {id:"debrief",t:"Debrief today's cases",d:"Log a case with your 3-line debrief",stat:"STR",xp:10},
 ];
 const SIDE={id:"move",t:"Move your body",d:"20 min walk, run or gym",stat:"VIT",xp:10};
 const DAILY_BONUS=15, PERFECT_DAY=10;
@@ -279,7 +342,7 @@ const HIDDEN=[
   {t:"Write 200 words of your paper or protocol",d:"Any section, rough is fine",stat:"END",xp:15},
   {t:"Explain one GCS change to a family",d:"Plain words, no jargon",stat:"WIS",xp:15},
   {t:"Name every foramen of the skull base",d:"And what passes through each",stat:"INT",xp:15},
-  {t:"Two minutes of microscope-free suturing drill",d:"Fine sutures on a glove or chicken skin",stat:"STR",xp:15},
+  {t:"Ten minutes of fine suturing drill",d:"Fine sutures on a glove or chicken skin",stat:"STR",xp:15},
   {t:"Ten minutes on one FCS past question",d:"Write the answer out in full",stat:"END",xp:15},
   {t:"Thank someone on the team properly",d:"Theatre sister, anaesthetist, porter",stat:"VIT",xp:15},
 ];
@@ -289,11 +352,11 @@ const WEEKLY=[
   {id:"research",t:"Research hour",d:"60 min on the paper or MMed",stat:"END",xp:30},
   {id:"fcs",t:"FCS topic reading",d:"45 min on this month's gate",stat:"INT",xp:25},
   {id:"crisis",t:"Crisis rehearsal",d:"Sinus bleed, aneurysm rupture or brain swelling",stat:"WIS",xp:20},
-  {id:"consult",t:"Take a case question to a consultant",d:"Especially after a solo night case",stat:"WIS",xp:20},
+  {id:"consult",t:"Take a case question to a consultant",d:"Ticks itself when you mark a logged question as asked",stat:"WIS",xp:20},
   {id:"deep",t:"Deep block: research or FCS",d:"90 min, weekend",stat:"END",xp:40},
   {id:"famfri",t:"Family evening",d:"Protected, phone away",stat:"VIT",xp:25},
   {id:"famsat",t:"Family half-day",d:"Weekend, phone away",stat:"VIT",xp:25},
-  {id:"review",t:"Sunday review",d:"Count blocks, plan next week's cases",stat:"WIS",xp:15},
+  {id:"review",t:"Sunday review",d:"Count blocks, read your case insights, plan next week",stat:"WIS",xp:15},
 ];
 const WEEK_TARGET=7, WEEK_BONUS=60, PERFECT_WEEK=40, WEEK_XP_GOAL=400;
 const JOBS=[
@@ -336,6 +399,36 @@ const TITLES=[
   [30,"Sylvian Splitter"],[40,"Skull-Base Seeker"],[50,"Clip Bearer"],[65,"Shadow of the Theatre"],[80,"Monarch in Waiting"],[100,"Monarch of the Neuraxis"],
 ];
 const JOB_LEVEL=10, SP_PER_LEVEL=3;
+
+/* study */
+const DECKS=window.HUNTER_DECKS||[{id:"anat",t:"Core"}];
+const BUILTIN=(window.HUNTER_CARDS||[]).map(([id,deck,f,b])=>({id,deck,f,b,builtin:true}));
+const DAILY_REVIEWS=20, NEW_PER_DAY=10, MASTER_IVL=21, KNOWN_IVL=7, MASTER_XP=3;
+
+/* cases */
+const CATS=[
+  {id:"trauma",t:"Cranial trauma"},{id:"cspine",t:"Cervical spine"},{id:"tlspine",t:"Thoracolumbar"},
+  {id:"vascular",t:"Vascular"},{id:"tumour",t:"Tumour"},{id:"pfossa",t:"Post fossa / skull base"},
+  {id:"paeds",t:"Paeds / CSF"},{id:"func",t:"Nerve / functional"},{id:"infection",t:"Infection"},{id:"other",t:"Other"},
+];
+const ROLES=[
+  {id:"obs",t:"Observed"},{id:"assist",t:"Assisted"},{id:"parts",t:"Did parts"},{id:"s2s",t:"Skin to skin"},{id:"teach",t:"Taught a junior"},
+];
+const ROLE_UP={parts:{xp:30,stat:"STR",t:"First time doing parts"},s2s:{xp:60,stat:"STR",t:"First skin to skin"},teach:{xp:40,stat:"WIS",t:"First time teaching"}};
+const WEAK=[
+  {id:"haemostasis",t:"Haemostasis",drill:"Bipolar-and-suction drill on a model, and say your bleeding algorithm out loud before each case."},
+  {id:"exposure",t:"Exposure",drill:"Before each case, draw the incision, bone flap and corridor from the imaging."},
+  {id:"positioning",t:"Positioning",drill:"Write a positioning checklist (pins, pressure points, head height, drapes) and run it yourself every case."},
+  {id:"micro",t:"Microscope work",drill:"Three short microscope sessions a week: suturing and dissection on models."},
+  {id:"closure",t:"Dural / skin closure",drill:"Practise watertight dural closure on a model and time your skin closure."},
+  {id:"instruments",t:"Instruments",drill:"Learn each tray's instruments by name; ask the scrub sister to quiz you."},
+  {id:"anatomy",t:"Anatomy orientation",drill:"Read the approach in Rhoton the night before and study the deck for that region."},
+  {id:"decision",t:"Decision-making",drill:"Write your own plan before hearing the consultant's, then compare."},
+  {id:"speed",t:"Speed / flow",drill:"Time each step of a common case and set a target for the next one."},
+  {id:"communication",t:"Team communication",drill:"Brief the team before incision: plan, risks, equipment."},
+  {id:"fatigue",t:"Fatigue",drill:"Protect sleep before elective lists; eat and drink before long cases."},
+];
+
 const ACH=[
   {id:"first",t:"Arise",d:"Complete your first quest",ic:"I",test:c=>c.quests>=1},
   {id:"day1",t:"Daily cleared",d:"Clear a day's dailies",ic:"D",test:c=>c.daysCleared>=1},
@@ -348,6 +441,14 @@ const ACH=[
   {id:"month",t:"Month of discipline",d:"4 cleared weeks in a row",ic:"M",test:c=>c.bestWeekRun>=4},
   {id:"oncall",t:"Night shift",d:"Clear 5 on-call days",ic:"N",test:c=>c.callClears>=5},
   {id:"hidden10",t:"Secret seeker",d:"10 hidden quests",ic:"?",test:c=>c.hidden>=10},
+  {id:"master1",t:"It stuck",d:"Master your first card (3-week interval)",ic:"K",test:c=>c.mastered>=1},
+  {id:"master50",t:"Living textbook",d:"Master 50 cards",ic:"T",test:c=>c.mastered>=50},
+  {id:"deckdone",t:"Deck conquered",d:"Know every card in one deck",ic:"Q",test:c=>c.decksKnown>=1},
+  {id:"case1",t:"First debrief",d:"Log your first case",ic:"L",test:c=>c.cases>=1},
+  {id:"case50",t:"Reflective surgeon",d:"Debrief 50 cases",ic:"R",test:c=>c.cases>=50},
+  {id:"s2s",t:"Skin to skin",d:"Log a case you did start to finish",ic:"S",test:c=>c.roleUps.includes("s2s")},
+  {id:"teach",t:"Pass it on",d:"Log a case where you taught",ic:"↑",test:c=>c.roleUps.includes("teach")},
+  {id:"asked10",t:"Curious mind",d:"Take 10 questions to a consultant",ic:"A",test:c=>c.asked>=10},
   {id:"gate1",t:"Gate breaker",d:"Clear your first gate",ic:"G",test:c=>c.gates>=1},
   {id:"gate8",t:"Dungeon master",d:"Clear all eight gates",ic:"8",test:c=>c.gates>=8},
   {id:"boss1",t:"First boss",d:"Defeat a milestone",ic:"B",test:c=>c.bossCount>=1},
@@ -363,8 +464,9 @@ const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
 const parse=k=>new Date(k+"T00:00:00");
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const weekKey=d=>{const x=new Date(d);const wd=(x.getDay()+6)%7;return ymd(addDays(x,-wd))};
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt=(k,o)=>parse(k).toLocaleDateString("en-ZA",o);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function hiddenFor(k){let h=0;for(const ch of k)h=(h*31+ch.charCodeAt(0))>>>0;return HIDDEN[h%HIDDEN.length]}
 
 /* ---------- levelling: paced to about five years of registrar training ---------- */
@@ -373,12 +475,43 @@ function statLevel(xp){let L=1,acc=0,need=60;while(xp>=acc+need){acc+=need;L++;n
 
 /* ---------- state ---------- */
 const LS="hunter-system-v1";
-function blank(){return {start:ymd(new Date()),daily:{},weekly:{},dungeons:{},bosses:{},alloc:{},job:null,name:""}}
+function blank(){return {start:ymd(new Date()),daily:{},weekly:{},dungeons:{},bosses:{},alloc:{},job:null,name:"",
+  srs:{},myCards:[],edits:{},off:{},revlog:{},cases:[]}}
 function norm(s){const b=blank();if(!s||typeof s!=="object")return b;
-  return {start:s.start||b.start,daily:s.daily||{},weekly:s.weekly||{},dungeons:s.dungeons||{},bosses:s.bosses||{},
-    alloc:s.alloc||{},job:s.job||null,name:typeof s.name==="string"?s.name:""}}
+  const o=x=>x&&typeof x==="object"&&!Array.isArray(x)?x:{};
+  return {start:s.start||b.start,daily:o(s.daily),weekly:o(s.weekly),dungeons:o(s.dungeons),bosses:o(s.bosses),
+    alloc:o(s.alloc),job:s.job||null,name:typeof s.name==="string"?s.name:"",
+    srs:o(s.srs),myCards:Array.isArray(s.myCards)?s.myCards:[],edits:o(s.edits),off:o(s.off),revlog:o(s.revlog),
+    cases:Array.isArray(s.cases)?s.cases:[]}}
 let state=blank();
 try{const raw=localStorage.getItem(LS);if(raw)state=norm(JSON.parse(raw))}catch(e){}
+
+/* ---------- cards ---------- */
+function allCards(){
+  const out=[];
+  for(const c of BUILTIN){if(state.off[c.id])continue;const e=state.edits[c.id];out.push(e?{...c,f:e.f,b:e.b}:c)}
+  for(const c of state.myCards)out.push({...c,builtin:false});
+  return out;
+}
+function deckStats(cards,today){
+  const by={};for(const d of DECKS)by[d.id]={total:0,known:0,due:0,fresh:0,mastered:0};
+  for(const c of cards){const s=state.srs[c.id],d=by[c.deck]||(by[c.deck]={total:0,known:0,due:0,fresh:0,mastered:0});d.total++;
+    if(!s)d.fresh++;else{if(s.due<=today)d.due++;if(s.ivl>=KNOWN_IVL)d.known++;if(s.m)d.mastered++}}
+  return by;
+}
+function newToday(){const r=state.revlog[ymd(new Date())];return r?r.fresh||0:0}
+function sched(prev,g,today){
+  const s=prev?{...prev}:{ivl:0,ease:2.5,reps:0,lapses:0};
+  if(g===0){if(s.reps)s.lapses++;s.ease=Math.max(1.3,s.ease-0.2);s.ivl=0;s.due=today;return s}
+  if(!s.ivl){s.ivl=g===3?4:1;if(g===1)s.ease=Math.max(1.3,s.ease-0.15)}
+  else if(g===1){s.ivl=Math.max(s.ivl+1,Math.round(s.ivl*1.2));s.ease=Math.max(1.3,s.ease-0.15)}
+  else if(g===2){s.ivl=Math.max(s.ivl+1,Math.round(s.ivl*s.ease))}
+  else {s.ivl=Math.max(s.ivl+2,Math.round(s.ivl*s.ease*1.3));s.ease=s.ease+0.15}
+  s.reps++;s.due=ymd(addDays(parse(today),s.ivl));
+  if(s.ivl>=MASTER_IVL&&!s.m)s.m=today;
+  return s;
+}
+const ivlLabel=s=>s.ivl===0?"now":s.ivl<30?s.ivl+"d":s.ivl<365?Math.round(s.ivl/30)+"mo":(s.ivl/365).toFixed(1)+"y";
 
 /* day rules: normal = 2 of 3 core; on call = debrief; rest = protected */
 function coreCount(day){return day?CORE.filter(q=>day[q.id]).length:0}
@@ -407,6 +540,16 @@ function compute(s){
     if(WEEKLY.every(q=>w[q.id])){total+=PERFECT_WEEK;addW(k,PERFECT_WEEK);perfectWeeks++}}
   let gates=0;for(const d of DUNGEONS) if(s.dungeons[d.id]){add("INT",DUNGEON_XP,s.dungeons[d.id]);gates++;quests++}
   let bossCount=0;for(const b of BOSSES) if(s.bosses[b.id]){add(b.stat,b.xp,s.bosses[b.id]);bossCount++}
+  // knowledge retained: XP once per mastered card
+  let mastered=0;for(const id in s.srs){const r=s.srs[id];if(r&&r.m){add("INT",MASTER_XP,r.m);mastered++}}
+  // operative progression: XP the first time you reach a new role
+  const roleUps=[];const seen={};
+  const sorted=[...s.cases].sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0);
+  for(const cs of sorted){const r=ROLE_UP[cs.role];if(r&&!seen[cs.role]){seen[cs.role]=1;roleUps.push(cs.role);add(r.stat,r.xp,cs.date)}}
+  const asked=s.cases.filter(x=>x.q&&x.asked).length;
+  const today=ymd(new Date());
+  const ds=deckStats(allCards(),today);
+  const decksKnown=Object.values(ds).filter(d=>d.total>0&&d.known===d.total).length;
   const L=levelInfo(total);
   const spent=Object.values(s.alloc).reduce((a,b)=>a+(+b||0),0);
   const sp=SP_PER_LEVEL*(L.lvl-1)-spent;
@@ -414,18 +557,17 @@ function compute(s){
   for(const k in STATS){const i=statLevel(st[k]);statInfo[k]=i;statLv[k]=i.lvl+(+s.alloc[k]||0)}
   let rank=RANKS[0];for(const r of RANKS) if(L.lvl>=r.lvl&&r.need.every(id=>s.bosses[id])) rank=r;
   let title=TITLES[0][1];for(const [lv,t] of TITLES) if(L.lvl>=lv) title=t;
-  // streaks
-  const today=ymd(new Date());let run=0,best=0;
+  let run=0,best=0;
   for(let d=parse(s.start<today?s.start:today);ymd(d)<=today;d=addDays(d,1)){const k=ymd(d);
     if(dayOk(s.daily[k])){run++;best=Math.max(best,run)}else if(k!==today)run=0}
   let cur=0;{let d=new Date();if(!dayOk(s.daily[ymd(d)]))d=addDays(d,-1);while(dayOk(s.daily[ymd(d)])){cur++;d=addDays(d,-1)}}
-  // weekly runs
   let wrun=0,bestWeekRun=0;const thisWk=weekKey(new Date());
   for(let d=parse(weekKey(parse(s.start))),guard=0;ymd(d)<=thisWk&&guard<600;d=addDays(d,7),guard++){const k=ymd(d);
     if(weekCount(s.weekly[k])>=WEEK_TARGET){wrun++;bestWeekRun=Math.max(bestWeekRun,wrun)}else if(k!==thisWk)wrun=0}
   const bestWeek=Math.max(0,...Object.values(wk));
   const c={st,statInfo,statLv,total,L,sp,spent,rank,title,wk,quests,daysCleared,perfectDays,callClears,hidden,weeksCleared,perfectWeeks,
-    gates,bossCount,bestStreak:Math.max(best,cur),streak:cur,bestWeekRun,bestWeek,job:s.job};
+    gates,bossCount,bestStreak:Math.max(best,cur),streak:cur,bestWeekRun,bestWeek,job:s.job,
+    mastered,decksKnown,ds,cases:s.cases.length,roleUps,asked};
   c.ach=ACH.filter(a=>a.test(c)).map(a=>a.id);
   return c;
 }
@@ -436,10 +578,15 @@ function penalty(s){
   return !dayOk(s.daily[k1])&&!dayOk(s.daily[k2]);
 }
 
-/* ---------- view ---------- */
+/* ---------- view state ---------- */
+const TABS=["today","study","cases","quests","hunter","log"];
 let tab="today";
-try{const h=location.hash.slice(1);if(["today","week","gates","hunter","log"].includes(h))tab=h}catch(e){}
+try{const h=location.hash.slice(1);if(TABS.includes(h))tab=h}catch(e){}
 let resetArm=false,restoreOpen=false,backupShow=false,jobPick=false;
+let session=null;           // {queue:[ids], idx, shown, done, deck}
+let studyView="home";       // home | add | edit | browse
+let browseDeck=null, editId=null, delArm=null;
+let caseForm=false, caseDel=null, caseOpen=null;
 
 function questBtn(act,id,q,done,cls,tag){
   return `<button class="quest${done?" done":""}${cls||""}" data-act="${act}" data-id="${id}" aria-pressed="${done}">
@@ -481,6 +628,137 @@ function heatmap(){
   return `<div class="heat" aria-label="Last 16 weeks of daily activity">${h}</div>`;
 }
 
+/* ---------- study views ---------- */
+function startSession(deck){
+  const today=ymd(new Date());
+  const cards=allCards().filter(c=>!deck||c.deck===deck);
+  const due=cards.filter(c=>state.srs[c.id]&&state.srs[c.id].due<=today).sort((a,b)=>state.srs[a.id].due<state.srs[b.id].due?-1:1);
+  const room=Math.max(0,NEW_PER_DAY-newToday());
+  const fresh=cards.filter(c=>!state.srs[c.id]).slice(0,room);
+  const queue=[...due.map(c=>c.id),...fresh.map(c=>c.id)];
+  session={queue,idx:0,shown:false,done:0,deck,total:queue.length};
+}
+function renderStudy(c){
+  const today=ymd(new Date());
+  const cards=allCards();const byId={};for(const x of cards)byId[x.id]=x;
+  const rl=state.revlog[today]||{n:0,ok:0,fresh:0};
+  if(studyView==="add"||studyView==="edit") return renderCardForm(byId);
+  if(session&&session.idx<session.queue.length){
+    const card=byId[session.queue[session.idx]];
+    if(!card){session.idx++;return renderStudy(c)}
+    const s=state.srs[card.id];const deck=DECKS.find(d=>d.id===card.deck);
+    const left=session.queue.length-session.idx;
+    const pct=session.total?Math.min(100,100*session.done/Math.max(session.total,session.done+left)):0;
+    return `<section class="win">
+      <div class="qhead"><div><div class="eyebrow">${s?"Review":"New card"} · ${esc(deck?deck.t:card.deck)}</div></div><span class="mono muted small">${left} left</span></div>
+      <div class="sbar"><i style="width:${pct.toFixed(0)}%"></i></div>
+      <div class="flash"><div class="front">${esc(card.f)}</div>${session.shown?`<div class="back">${esc(card.b)}</div>`:""}</div>
+      ${session.shown?`<div class="grades">${["Again","Hard","Good","Easy"].map((t,g)=>`<button class="g${g}" data-act="grade" data-id="${g}">${t}<small>${ivlLabel(sched(s,g,today))}</small></button>`).join("")}</div>`
+        :`<button class="big" data-act="reveal">Show answer</button>`}
+      <div class="danger" style="justify-content:space-between"><button class="link" data-act="editCard" data-id="${esc(card.id)}">Edit this card</button><button class="link" data-act="endSession">End session</button></div>
+    </section>`;
+  }
+  if(session&&session.idx>=session.queue.length){
+    const msg=session.done?`You reviewed ${session.done} card${session.done===1?"":"s"}.`:"Nothing due right now.";
+    session=null;
+    toastLater=[msg];
+  }
+  if(studyView==="browse"&&browseDeck){
+    const d=DECKS.find(x=>x.id===browseDeck);const list=cards.filter(x=>x.deck===browseDeck);
+    return `<section class="win"><div class="qhead"><div><div class="eyebrow">Deck</div><h2>${esc(d?d.t:browseDeck)}</h2></div><span class="mono muted small">${list.length} cards</span></div>
+      <div class="danger" style="margin-top:0"><button class="btn gold" data-act="studyDeck" data-id="${browseDeck}">Study this deck</button><button class="btn" data-act="addCard">Add card</button><button class="btn" data-act="studyHome">Back</button></div>
+      <div class="decks">${list.map(x=>{const s=state.srs[x.id];return `<button class="deck" data-act="editCard" data-id="${esc(x.id)}"><span style="min-width:0"><b style="font-family:var(--body);font-weight:600">${esc(x.f)}</b><span class="qd">${esc(x.b)}</span></span><span class="due ${s?"":"zero"}">${s?(s.m?"mastered":s.ivl>=KNOWN_IVL?"known":"learning"):"new"}</span></button>`}).join("")}</div>
+    </section>`;
+  }
+  const ds=c.ds;let due=0,fresh=0;for(const k in ds){due+=ds[k].due;fresh+=ds[k].fresh}
+  const newAvail=Math.min(fresh,Math.max(0,NEW_PER_DAY-newToday()));
+  const goalMet=(state.daily[today]||{}).cards;
+  return `<section class="win">
+      <div class="qhead"><div><div class="eyebrow">Spaced repetition</div><h2>Today's review</h2></div><span class="mono muted small">${rl.n} done</span></div>
+      <div class="grid2" style="margin-top:0">
+        <div class="cell"><div class="k">Due now</div><div class="v">${due}</div></div>
+        <div class="cell"><div class="k">New today</div><div class="v">${newAvail}</div><span class="d muted">max ${NEW_PER_DAY} a day</span></div>
+      </div>
+      ${due+newAvail?`<button class="big" data-act="studyAll">Start review · ${due+newAvail} cards</button>`:`<p class="foot"><span class="clear">All caught up</span> · come back tomorrow</p>`}
+      <p class="foot">${goalMet?`<span class="clear">Flashcard quest cleared</span>`:`Review ${DAILY_REVIEWS} cards, or everything due, to clear today's flashcard quest.`} Each card you hold for 3 weeks is mastered: +${MASTER_XP} INT.</p>
+    </section>
+    <section class="win"><div class="qhead"><div><div class="eyebrow">Decks</div><h2>${c.mastered} mastered</h2></div><button class="btn" data-act="addCard">Add card</button></div>
+      <div class="decks">${DECKS.map(d=>{const x=ds[d.id]||{total:0,known:0,due:0};const pct=x.total?100*x.known/x.total:0;
+        return `<button class="deck" data-act="browse" data-id="${d.id}"><b>${esc(d.t)}</b><span class="due ${x.due?"":"zero"}">${x.due} due · ${x.known}/${x.total}</span><span class="bar"><i style="width:${pct.toFixed(0)}%"></i></span></button>`}).join("")}</div>
+      <p class="foot">Green shows cards you know (held for a week or more). The starter deck is a draft: check cards against Greenberg and edit anything you'd phrase differently.</p>
+    </section>`;
+}
+
+function renderCardForm(byId){
+    const card=studyView==="edit"?byId[editId]:null;
+    return `<section class="win"><div class="eyebrow">${card?"Edit card":"New card"}</div>
+      <div class="form">
+        <div class="field"><label for="cDeck">Deck</label><select id="cDeck" class="inp"${card&&card.builtin?" disabled":""}>${DECKS.map(d=>`<option value="${d.id}"${(card?card.deck:(browseDeck||"anat"))===d.id?" selected":""}>${esc(d.t)}</option>`).join("")}</select></div>
+        <div class="field"><label for="cFront">Question</label><textarea id="cFront" class="inp">${esc(card?card.f:"")}</textarea></div>
+        <div class="field"><label for="cBack">Answer</label><textarea id="cBack" class="inp">${esc(card?card.b:"")}</textarea></div>
+        <button class="big" data-act="saveCard">${card?"Save changes":"Add card"}</button>
+        <div class="danger">${card?(delArm===card.id?`<span class="small muted">Delete this card?</span><button class="btn red" data-act="delCard" data-id="${esc(card.id)}">Delete</button><button class="btn" data-act="delNo">Keep</button>`:`<button class="btn" data-act="delArm" data-id="${esc(card.id)}">Delete card</button>`):""}<button class="btn" data-act="studyHome">Cancel</button></div>
+      </div></section>`;
+  }
+
+/* ---------- cases view ---------- */
+function renderCases(){
+  const today=ymd(new Date());
+  const cases=[...state.cases].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:0);
+  let form="";
+  if(caseForm){
+    form=`<section class="win"><div class="eyebrow">Log a case</div>
+      <div class="form">
+        <p class="note">No patient names, folder numbers or ID numbers. Describe the case only.</p>
+        <div class="row2">
+          <div class="field"><label for="kDate">Date</label><input id="kDate" type="date" class="inp" value="${today}" max="${today}"></div>
+          <div class="field"><label for="kCat">Category</label><select id="kCat" class="inp">${CATS.map(x=>`<option value="${x.id}">${esc(x.t)}</option>`).join("")}</select></div>
+        </div>
+        <div class="field"><label for="kProc">Procedure</label><input id="kProc" class="inp" list="procList" placeholder="e.g. Burr holes for CSDH" maxlength="80">
+          <datalist id="procList">${[...new Set(state.cases.map(x=>x.proc))].slice(0,40).map(p=>`<option value="${esc(p)}">`).join("")}</datalist></div>
+        <div class="row2">
+          <div class="field"><label for="kRole">Your role</label><select id="kRole" class="inp">${ROLES.map((r,i)=>`<option value="${r.id}"${i===1?" selected":""}>${esc(r.t)}</option>`).join("")}</select></div>
+          <div class="field"><label for="kDiff">Difficulty</label><select id="kDiff" class="inp">${[1,2,3,4,5].map(n=>`<option value="${n}"${n===3?" selected":""}>${n} ${["","routine","","moderate","","very hard"][n]}</option>`).join("")}</select></div>
+        </div>
+        <label class="chk"><input id="kSolo" type="checkbox"> Solo, no senior scrubbed</label>
+        <div class="field"><label for="kGood">What went well</label><textarea id="kGood" class="inp" maxlength="300"></textarea></div>
+        <div class="field"><label for="kBad">What was slow, clumsy or uncertain</label><textarea id="kBad" class="inp" maxlength="300"></textarea></div>
+        <div class="field"><label for="kNext">What I'll do differently</label><textarea id="kNext" class="inp" maxlength="300"></textarea></div>
+        <div class="field"><span class="flabel">Where it went wrong (tap any)</span><div class="tags" id="kTags">${WEAK.map(w=>`<button type="button" class="tagb" data-tag="${w.id}" aria-pressed="false">${esc(w.t)}</button>`).join("")}</div></div>
+        <div class="field"><label for="kQ">Question for a consultant (optional)</label><input id="kQ" class="inp" maxlength="200" placeholder="e.g. When would you have converted to a craniotomy?"></div>
+        <button class="big" data-act="saveCase">Save case</button>
+        <div class="danger"><button class="btn" data-act="caseCancel">Cancel</button></div>
+      </div></section>`;
+  }
+  // insights
+  const total=cases.length;
+  const byCat=CATS.map(cat=>{const xs=cases.filter(x=>x.cat===cat.id);return {cat,n:xs.length,roles:ROLES.map(r=>xs.filter(x=>x.role===r.id).length)}}).filter(x=>x.n);
+  const maxN=Math.max(1,...byCat.map(x=>x.n));
+  const last=cases.slice(0,10);const tc={};for(const x of last)for(const t of (x.tags||[]))tc[t]=(tc[t]||0)+1;
+  const topW=Object.entries(tc).sort((a,b)=>b[1]-a[1]).slice(0,3);
+  const open=cases.filter(x=>x.q&&!x.asked);
+  const ROLE_COL=["r0","r1","r2","r3","r4"];
+  return `${form}
+    ${caseForm?"":`<section class="win"><div class="qhead"><div><div class="eyebrow">Case log</div><h2>${total} case${total===1?"":"s"} debriefed</h2></div></div>
+      <p class="small muted">Logging a case with its debrief clears today's debrief quest. XP comes from growth, like your first skin-to-skin in a category, not from case numbers.</p>
+      <button class="big" data-act="caseNew">Log a case</button></section>`}
+    ${open.length?`<section class="win"><div class="eyebrow">Questions to ask</div><div class="qlist" style="margin-top:10px">${open.map(x=>`<div class="q"><span class="small" style="min-width:0">${esc(x.q)}<span class="qd">${esc(x.proc)} · ${fmt(x.date,{day:"numeric",month:"short"})}</span></span><button class="btn gold" data-act="asked" data-id="${esc(x.id)}">Asked</button></div>`).join("")}</div>
+      <p class="foot">Marking one as asked ticks this week's consultant quest.</p></section>`:""}
+    ${topW.length?`<section class="win"><div class="eyebrow">Recurring weaknesses</div><p class="small muted" style="margin-top:4px">From your last ${last.length} debriefs.</p>
+      <div class="weak">${topW.map(([id,n])=>{const w=WEAK.find(x=>x.id===id);return w?`<div class="w"><b>${esc(w.t)}</b> <span class="mono small muted">${n} of ${last.length}</span><p class="small" style="margin-top:4px">${esc(w.drill)}</p></div>`:""}).join("")}</div></section>`:""}
+    ${byCat.length?`<section class="win"><div class="eyebrow">Logbook by category</div>
+      <div class="cats">${byCat.map(x=>`<div class="cat"><span>${esc(x.cat.t)}</span><span class="stack" style="width:${(100*x.n/maxN).toFixed(0)}%">${x.roles.map((n,i)=>n?`<i class="${ROLE_COL[i]}" style="flex:${n}"></i>`:"").join("")}</span><span class="mono small" style="text-align:right">${x.n}</span></div>`).join("")}</div>
+      <div class="rlegend">${ROLES.map((r,i)=>`<span style="--c:${["#3a4f78","#4f7fc2","var(--glow)","var(--ok)","var(--gold)"][i]}">${esc(r.t)}</span>`).join("")}</div></section>`:""}
+    ${total?`<section class="win"><div class="eyebrow">Recent cases</div><div class="qlist" style="margin-top:10px">${cases.slice(0,25).map(x=>{const cat=CATS.find(c=>c.id===x.cat),role=ROLES.find(r=>r.id===x.role);const open=caseOpen===x.id;
+      return `<div class="case"><div class="top"><b>${esc(x.proc||"Case")}</b><span class="meta">${fmt(x.date,{day:"numeric",month:"short"})}</span></div>
+        <div class="meta">${esc(cat?cat.t:"")} · ${esc(role?role.t:"")} · difficulty ${x.diff}${x.solo?" · solo":""}</div>
+        ${open?`<dl>${x.good?`<dt>Went well</dt><dd>${esc(x.good)}</dd>`:""}${x.bad?`<dt>Clumsy</dt><dd>${esc(x.bad)}</dd>`:""}${x.next?`<dt>Next time</dt><dd>${esc(x.next)}</dd>`:""}${(x.tags||[]).length?`<dt>Tags</dt><dd>${x.tags.map(t=>esc((WEAK.find(w=>w.id===t)||{}).t||t)).join(", ")}</dd>`:""}${x.q?`<dt>Question</dt><dd>${esc(x.q)}${x.asked?" (asked)":""}</dd>`:""}</dl>
+          <div class="danger">${caseDel===x.id?`<span class="small muted">Delete this case?</span><button class="btn red" data-act="caseDelYes" data-id="${esc(x.id)}">Delete</button><button class="btn" data-act="caseDelNo">Keep</button>`:`<button class="btn" data-act="caseDel" data-id="${esc(x.id)}">Delete</button>`}<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">Hide</button></div>`
+          :`<button class="link" data-act="caseToggle" data-id="${esc(x.id)}">Show debrief</button>`}</div>`}).join("")}</div></section>`:""}`;
+}
+
+/* ---------- main render ---------- */
+let toastLater=null;
 function render(){
   const c=compute(state);
   const now=new Date(),tk=ymd(now),wk=weekKey(now);
@@ -501,8 +779,14 @@ function render(){
 
   if(tab==="today"){
     const day=state.daily[tk]||{};const mode=day.rest?"rest":day.call?"call":"normal";
-    const h=hiddenFor(tk);
+    const h=hiddenFor(tk);const rl=state.revlog[tk]||{n:0};
+    const caseToday=state.cases.some(x=>x.date===tk);
     const rule=mode==="call"?"On call: debrief your cases to clear the day.":mode==="rest"?"Rest day: your streak is protected. Recover.":"Clear 2 of 3 core quests. All 3 earns a Flawless bonus.";
+    const off=q=>(mode==="call"&&q.id!=="debrief")||mode==="rest"?" off":"";
+    const coreBtn=q=>{const done=!!day[q.id];
+      if(q.id==="cards"&&!done) return questBtn("goStudy",q.id,{...q,d:`${rl.n}/${DAILY_REVIEWS} reviewed · tap to study`},false,off(q));
+      if(q.id==="debrief"&&!done) return questBtn("goCase",q.id,{...q,d:"Tap to log a case and debrief"},false,off(q));
+      return questBtn("daily",q.id,q,done,off(q))};
     v.innerHTML=`<section class="win">
       <div class="qhead"><div><div class="eyebrow">Daily quest</div><h2>${now.toLocaleDateString("en-ZA",{weekday:"long",day:"numeric",month:"long"})}</h2></div>
       <span class="mono muted">${coreCount(day)}/3</span></div>
@@ -512,18 +796,26 @@ function render(){
         <button data-act="mode" data-id="rest" aria-pressed="${mode==="rest"}">Post-call</button>
       </div>
       <p class="small muted" style="margin-bottom:10px">${rule}</p>
-      <div class="qlist">${CORE.map(q=>questBtn("daily",q.id,q,!!day[q.id],(mode==="call"&&q.id!=="debrief")||mode==="rest"?" off":"")).join("")}
+      <div class="qlist">${CORE.map(coreBtn).join("")}
       ${questBtn("daily",SIDE.id,SIDE,!!day[SIDE.id]," side",'<span class="tag">Side</span>')}</div>
       ${dayCleared(day)?`<p class="foot"><span class="clear">Daily quest cleared</span> · +${DAILY_BONUS} XP${!day.call&&coreCount(day)===3?` · Flawless +${PERFECT_DAY}`:""}</p>`:""}
+      ${(!day.cards||!day.debrief)?`<div class="danger" style="margin-top:6px">${!day.cards?`<button class="link" data-act="daily" data-id="cards">Used another app? Tick flashcards</button>`:""}${!day.debrief&&!caseToday?`<button class="link" data-act="daily" data-id="debrief">Debriefed on paper? Tick debrief</button>`:""}</div>`:""}
     </section>
     <section class="win">
       <div class="qhead"><div><div class="eyebrow" style="color:var(--violet)">Hidden quest</div><h2>Appears once, today only</h2></div></div>
       <div class="qlist">${questBtn("daily","hidden",h,!!day.hidden," hidden",'<span class="tag v">Hidden</span>')}</div>
     </section>`;
-  }else if(tab==="week"){
+  }else if(tab==="study"){
+    v.innerHTML=renderStudy(c);
+  }else if(tab==="cases"){
+    v.innerHTML=renderCases();
+  }else if(tab==="quests"){
     const w=state.weekly[wk]||{};const n=weekCount(w),tot=weekTotal();
     const mon=parse(wk);
     let pips="";for(let i=0;i<tot;i++)pips+=`<i class="${i<n?"on":""}${i===WEEK_TARGET-1?" tgt":""}"></i>`;
+    const sm=parse(state.start);
+    const due=i=>new Date(sm.getFullYear(),sm.getMonth()+i+1,0);
+    const nextIdx=DUNGEONS.findIndex(d=>!state.dungeons[d.id]);
     v.innerHTML=`<section class="win">
       <div class="qhead"><div><div class="eyebrow">Weekly quests</div><h2>Week of ${mon.toLocaleDateString("en-ZA",{day:"numeric",month:"short"})}</h2></div>
       <span class="mono muted">${n}/${tot}</span></div>
@@ -531,18 +823,16 @@ function render(){
       <p class="small muted" style="margin-bottom:10px">Target is ${WEEK_TARGET} of ${tot}. Call weeks happen, so you don't need them all. Doing every core quest earns Perfect week.</p>
       <div class="qlist">${job?questBtn("weekly","job",{...job.q,stat:job.stat},!!w.job," job",'<span class="tag g">Class</span>'):""}${WEEKLY.map(q=>questBtn("weekly",q.id,q,!!w[q.id])).join("")}</div>
       ${n>=WEEK_TARGET?`<p class="foot"><span class="clear">Week cleared</span> · +${WEEK_BONUS} XP${WEEKLY.every(q=>w[q.id])?` · Perfect week +${PERFECT_WEEK}`:""}</p>`:`<p class="foot">${WEEK_TARGET-n} more to clear the week for +${WEEK_BONUS} XP.</p>`}
-    </section>`;
-  }else if(tab==="gates"){
-    const sm=parse(state.start);
-    const due=i=>{const d=new Date(sm.getFullYear(),sm.getMonth()+i+1,0);return d};
-    const nextIdx=DUNGEONS.findIndex(d=>!state.dungeons[d.id]);
-    v.innerHTML=`<section class="win">
+    </section>
+    <section class="win">
       <div class="qhead"><div><div class="eyebrow">Dungeons · one per month</div><h2>Reading gates</h2></div>
       <span class="mono muted">${c.gates}/${DUNGEONS.length}</span></div>
-      <p class="small muted" style="margin-bottom:10px">A gate clears when you finish its FCS past-paper questions. One a month keeps the full cycle to eight months.</p>
-      <div class="qlist">${DUNGEONS.map((d,i)=>{const dd=due(i),late=!state.dungeons[d.id]&&dd<now;
+      <p class="small muted" style="margin-bottom:10px">Clear a gate when you've finished its FCS past-paper questions and know most of its flashcard deck.</p>
+      <div class="qlist">${DUNGEONS.map((d,i)=>{const dd=due(i),late=!state.dungeons[d.id]&&dd<now;const x=c.ds[d.id]||{total:0,known:0};
         const when=state.dungeons[d.id]?"Cleared "+fmt(state.dungeons[d.id],{day:"numeric",month:"short"}):(late?"Overdue · was due ":"Due ")+dd.toLocaleDateString("en-ZA",{month:"short",year:"numeric"});
-        return questBtn("dungeon",d.id,{t:d.t,d:d.d+" · "+when,xp:DUNGEON_XP,stat:"INT"},!!state.dungeons[d.id],i===nextIdx?" job":"",i===nextIdx?'<span class="tag g">Current</span>':"")}).join("")}</div>
+        const mast=x.total?` · deck ${Math.round(100*x.known/x.total)}% known`:"";
+        return questBtn("dungeon",d.id,{t:d.t,d:d.d+" · "+when+mast,xp:DUNGEON_XP,stat:"INT"},!!state.dungeons[d.id],i===nextIdx?" job":"",i===nextIdx?'<span class="tag g">Current</span>':"")}).join("")}</div>
+      ${nextIdx>=0?`<button class="big ghost" data-act="studyDeck" data-id="${DUNGEONS[nextIdx].id}">Study the ${esc(DUNGEONS[nextIdx].t)} deck</button>`:""}
     </section>
     <section class="win"><div class="qhead"><div><div class="eyebrow">Boss fights</div><h2>Milestones</h2></div></div>
       <div class="qlist">${BOSSES.map(b=>questBtn("boss",b.id,{t:b.t,d:state.bosses[b.id]?"Defeated "+fmt(state.bosses[b.id],{day:"numeric",month:"short",year:"numeric"}):"Typical timing: "+b.when,xp:b.xp,stat:b.stat},!!state.bosses[b.id])).join("")}</div>
@@ -552,7 +842,7 @@ function render(){
     const canJob=c.L.lvl>=JOB_LEVEL;
     v.innerHTML=`<section class="win"><div class="qhead"><div><div class="eyebrow">Attributes</div><h2>Stats</h2></div>
       <span class="mono small ${c.sp>0?"":"muted"}" style="${c.sp>0?"color:var(--gold)":""}">${c.sp} skill pts</span></div>
-      <p class="small muted">Stats grow from quests. You also earn ${SP_PER_LEVEL} skill points per level to spend where you choose.</p>
+      <p class="small muted">Stats grow from quests, mastered cards and new operative roles. You also earn ${SP_PER_LEVEL} skill points per level to spend where you choose.</p>
       <div class="stats">${Object.keys(STATS).map(k=>{const s=c.statInfo[k],a=+state.alloc[k]||0;
         return `<div class="stat"><span class="k">${k}</span><div style="min-width:0"><div class="n">${STATS[k]} <span class="muted mono" style="font-size:12px">${c.st[k]} XP</span></div>
         <div class="bar"><i style="width:${(100*s.into/s.need).toFixed(1)}%"></i></div></div>
@@ -575,8 +865,8 @@ function render(){
     </section>
     <section class="win"><div class="eyebrow">System</div>
       <div style="margin-top:8px"><label for="nameBox" class="small muted">Hunter name</label>
-        <div class="danger" style="margin-top:4px"><input id="nameBox" maxlength="32" value="${esc(state.name)}" placeholder="Neurosurgery Hunter" style="flex:1;min-width:0;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:8px;font:inherit"><button class="btn" data-act="saveName">Save</button></div></div>
-      <p class="small muted" style="margin-top:12px">Progress lives on this phone. Copy a backup code every week or two and keep it in Notes.</p>
+        <div class="danger" style="margin-top:4px"><input id="nameBox" class="inp" maxlength="32" value="${esc(state.name)}" placeholder="Neurosurgery Hunter" style="flex:1"><button class="btn" data-act="saveName">Save</button></div></div>
+      <p class="small muted" style="margin-top:12px">Everything, including your cards and case log, lives on this phone. Copy a backup code every week or two and keep it in Notes.</p>
       <div class="danger"><button class="btn" data-act="backup">Copy backup code</button><button class="btn" data-act="restoreOpen">Restore from code</button></div>
       ${restoreOpen?`<div style="margin-top:10px"><label for="restoreBox" class="small muted">Paste your backup code</label><textarea id="restoreBox"></textarea><div class="danger"><button class="btn" data-act="restoreDo">Restore</button><button class="btn" data-act="restoreNo">Cancel</button></div></div>`:""}
       ${backupShow?`<div style="margin-top:10px"><label for="backupBox" class="small muted">Your backup code (select and copy)</label><textarea id="backupBox" readonly>${esc(JSON.stringify(state))}</textarea></div>`:""}
@@ -586,20 +876,27 @@ function render(){
     const lastWk=weekKey(addDays(now,-7));
     const tw=state.weekly[wk]||{},lw=state.weekly[lastWk]||{};
     const daysIn=(k,n)=>{let x=0;for(let i=0;i<n;i++)if(dayCleared(state.daily[ymd(addDays(parse(k),i))]))x++;return x};
+    const revIn=(k,n)=>{let r=0,ok=0;for(let i=0;i<n;i++){const e=state.revlog[ymd(addDays(parse(k),i))];if(e){r+=e.n||0;ok+=e.ok||0}}return {r,ok}};
     const elapsed=((now.getDay()+6)%7)+1;
-    const d=(a,b)=>{const x=a-b;return x===0?`<span class="d muted">same as last week</span>`:`<span class="d ${x>0?"up":"down"}">${x>0?"▲":"▼"} ${Math.abs(x)} vs last week</span>`};
+    const dlt=(a,b)=>{const x=a-b;return x===0?`<span class="d muted">same as last week</span>`:`<span class="d ${x>0?"up":"down"}">${x>0?"▲":"▼"} ${Math.abs(x)} vs last week</span>`};
     const twx=c.wk[wk]||0,lwx=c.wk[lastWk]||0;
+    const rv=revIn(wk,7),rvl=revIn(lastWk,7);
+    const casesWk=state.cases.filter(x=>weekKey(parse(x.date))===wk).length,casesLw=state.cases.filter(x=>weekKey(parse(x.date))===lastWk).length;
     const daysSince=Math.round((parse(tk)-parse(state.start))/864e5)+1;
     const avg=Math.round(c.total/Math.max(1,daysSince/7));
     const toNext=c.L.need-c.L.into;
+    let allR=0,allOk=0;for(const k in state.revlog){allR+=state.revlog[k].n||0;allOk+=state.revlog[k].ok||0}
     v.innerHTML=`<section class="win"><div class="eyebrow">Weekly report</div>
       <h2 style="margin-top:4px">Week of ${fmt(wk,{day:"numeric",month:"short"})}</h2>
       <div class="grid2">
-        <div class="cell"><div class="k">XP this week</div><div class="v">${twx}</div>${d(twx,lwx)}</div>
-        <div class="cell"><div class="k">Days cleared</div><div class="v">${daysIn(wk,elapsed)}<span class="muted" style="font-size:13px"> / ${elapsed}</span></div>${d(daysIn(wk,elapsed),daysIn(lastWk,elapsed))}</div>
-        <div class="cell"><div class="k">Weekly quests</div><div class="v">${weekCount(tw)}<span class="muted" style="font-size:13px"> / ${WEEK_TARGET}</span></div>${d(weekCount(tw),weekCount(lw))}</div>
-        <div class="cell"><div class="k">Next level</div><div class="v">${toNext}</div><span class="d muted">XP to level ${c.L.lvl+1}</span></div>
+        <div class="cell"><div class="k">XP this week</div><div class="v">${twx}</div>${dlt(twx,lwx)}</div>
+        <div class="cell"><div class="k">Days cleared</div><div class="v">${daysIn(wk,elapsed)}<span class="muted" style="font-size:13px"> / ${elapsed}</span></div>${dlt(daysIn(wk,elapsed),daysIn(lastWk,elapsed))}</div>
+        <div class="cell"><div class="k">Cards reviewed</div><div class="v">${rv.r}</div>${dlt(rv.r,rvl.r)}</div>
+        <div class="cell"><div class="k">Recall rate</div><div class="v">${rv.r?Math.round(100*rv.ok/rv.r)+"%":"—"}</div><span class="d muted">answered Good or Easy</span></div>
+        <div class="cell"><div class="k">Cases debriefed</div><div class="v">${casesWk}</div>${dlt(casesWk,casesLw)}</div>
+        <div class="cell"><div class="k">Weekly quests</div><div class="v">${weekCount(tw)}<span class="muted" style="font-size:13px"> / ${WEEK_TARGET}</span></div>${dlt(weekCount(tw),weekCount(lw))}</div>
       </div>
+      <p class="foot">${toNext} XP to level ${c.L.lvl+1}.</p>
     </section>
     <section class="win"><div class="eyebrow">XP per week</div>
       <p class="small muted" style="margin-top:4px">Last 12 weeks. Green bars hit the ${WEEK_XP_GOAL} XP goal, a realistic pace with call.</p>
@@ -613,7 +910,9 @@ function render(){
       <div class="grid2">
         <div class="cell"><div class="k">Longest streak</div><div class="v">${c.bestStreak}<span class="muted" style="font-size:13px"> days</span></div></div>
         <div class="cell"><div class="k">Best week</div><div class="v">${c.bestWeek}<span class="muted" style="font-size:13px"> XP</span></div></div>
-        <div class="cell"><div class="k">Quests done</div><div class="v">${c.quests}</div></div>
+        <div class="cell"><div class="k">Cards mastered</div><div class="v">${c.mastered}</div></div>
+        <div class="cell"><div class="k">Lifetime recall</div><div class="v">${allR?Math.round(100*allOk/allR)+"%":"—"}</div></div>
+        <div class="cell"><div class="k">Cases debriefed</div><div class="v">${c.cases}</div></div>
         <div class="cell"><div class="k">Days cleared</div><div class="v">${c.daysCleared}</div></div>
         <div class="cell"><div class="k">Total XP</div><div class="v">${c.total.toLocaleString("en-ZA")}</div></div>
         <div class="cell"><div class="k">Average per week</div><div class="v">${avg}</div></div>
@@ -621,6 +920,7 @@ function render(){
       <p class="foot">Hunting since ${fmt(state.start,{day:"numeric",month:"long",year:"numeric"})} · day ${daysSince}</p>
     </section>`;
   }
+  if(toastLater){const t=toastLater;toastLater=null;toast(t[0],t[1]||"")}
 }
 
 /* ---------- toasts ---------- */
@@ -633,55 +933,125 @@ function next(){const t=document.getElementById("toast");const m=queue.shift();i
 
 /* ---------- actions ---------- */
 function toggle(obj,key){if(obj[key])delete obj[key];else obj[key]=true}
+const val=id=>{const el=document.getElementById(id);return el?el.value.trim():""};
+function go(t){tab=t;resetArm=false;jobPick=false;render();window.scrollTo({top:0})}
+
 document.addEventListener("click",e=>{
-  const tb=e.target.closest("[data-tab]");if(tb){tab=tb.dataset.tab;resetArm=false;jobPick=false;render();window.scrollTo({top:0});return}
+  const tb=e.target.closest("[data-tab]");if(tb){if(tb.dataset.tab!=="study"&&session&&!session.done)session=null;go(tb.dataset.tab);return}
+  const tg=e.target.closest("[data-tag]");if(tg){tg.setAttribute("aria-pressed",String(tg.getAttribute("aria-pressed")!=="true"));return}
   const b=e.target.closest("[data-act]");if(!b||b.disabled)return;
   const act=b.dataset.act,id=b.dataset.id;
+  // navigation-only actions
   if(act==="resetArm"){resetArm=true;render();return}
   if(act==="resetNo"){resetArm=false;render();return}
   if(act==="jobPick"){jobPick=true;render();return}
-  if(act==="saveName"){state.name=document.getElementById("nameBox").value.trim().slice(0,32);save();render();toast("Name saved","");return}
+  if(act==="goStudy"){go("study");return}
+  if(act==="goCase"){caseForm=true;go("cases");return}
+  if(act==="caseNew"){caseForm=true;render();window.scrollTo({top:0});return}
+  if(act==="caseCancel"){caseForm=false;render();return}
+  if(act==="caseToggle"){caseOpen=caseOpen===id?null:id;caseDel=null;render();return}
+  if(act==="caseDel"){caseDel=id;render();return}
+  if(act==="caseDelNo"){caseDel=null;render();return}
+  if(act==="reveal"){if(session){session.shown=true;render()}return}
+  if(act==="endSession"){const n=session?session.done:0;session=null;render();if(n)toast("Session ended",`${n} card${n===1?"":"s"} reviewed`);return}
+  if(act==="studyAll"){startSession(null);studyView="home";go("study");return}
+  if(act==="studyDeck"){startSession(id);studyView="home";go("study");if(session&&!session.queue.length){session=null;toast("Nothing due in this deck","New cards may be used up for today");render()}return}
+  if(act==="browse"){browseDeck=id;studyView="browse";render();window.scrollTo({top:0});return}
+  if(act==="addCard"){studyView="add";editId=null;delArm=null;render();window.scrollTo({top:0});return}
+  if(act==="editCard"){studyView="edit";editId=id;delArm=null;if(session){session.paused=true}render();window.scrollTo({top:0});return}
+  if(act==="studyHome"){studyView=browseDeck&&studyView!=="browse"&&studyView!=="home"?"browse":"home";if(studyView==="home")browseDeck=null;delArm=null;render();return}
+  if(act==="delArm"){delArm=id;render();return}
+  if(act==="delNo"){delArm=null;render();return}
+  if(act==="saveName"){state.name=val("nameBox").slice(0,32);save();render();toast("Name saved","");return}
   if(act==="backup"){const txt=JSON.stringify(state);
     const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject();
     p.then(()=>toast("Backup copied","Paste it into Notes")).catch(()=>{backupShow=true;render();const bx=document.getElementById("backupBox");if(bx){bx.focus();bx.select()}});return}
   if(act==="restoreOpen"){restoreOpen=true;backupShow=false;render();return}
   if(act==="restoreNo"){restoreOpen=false;render();return}
   if(act==="restoreDo"){const bx=document.getElementById("restoreBox");
-    try{const obj=JSON.parse(bx.value.trim());if(!obj||typeof obj!=="object"||!obj.daily)throw 0;state=norm(obj);restoreOpen=false;save();render();toast("Progress restored","")}
+    try{const obj=JSON.parse(bx.value.trim());if(!obj||typeof obj!=="object"||!obj.daily)throw 0;state=norm(obj);restoreOpen=false;session=null;save();render();toast("Progress restored","")}
     catch(err){toast("That code didn't work","Copy the whole backup code and try again")}return}
 
+  // state-changing actions
   const before=compute(state);
   const now=new Date(),tk=ymd(now),wk=weekKey(now);
   const wasCleared=dayCleared(state.daily[tk]);
-  if(act==="resetYes"){state=blank();resetArm=false}
-  else if(act==="daily"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);toggle(d,id)}
-  else if(act==="mode"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);delete d.rest;delete d.call;if(id==="rest")d.rest=true;if(id==="call")d.call=true}
+  const dayObj=()=>state.daily[tk]=Object.assign({},state.daily[tk]);
+  const msgs=[];
+  if(act==="resetYes"){state=blank();resetArm=false;session=null}
+  else if(act==="daily"){toggle(dayObj(),id)}
+  else if(act==="mode"){const d=dayObj();delete d.rest;delete d.call;if(id==="rest")d.rest=true;if(id==="call")d.call=true}
   else if(act==="weekly"){const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);toggle(w,id)}
   else if(act==="dungeon"){if(state.dungeons[id])delete state.dungeons[id];else state.dungeons[id]=tk}
   else if(act==="boss"){if(state.bosses[id])delete state.bosses[id];else state.bosses[id]=tk}
   else if(act==="alloc"){if(before.sp>0)state.alloc[id]=(+state.alloc[id]||0)+1}
   else if(act==="realloc"){state.alloc={}}
   else if(act==="job"){state.job=id;jobPick=false}
+  else if(act==="grade"){
+    if(!session)return;const g=+id;const cid=session.queue[session.idx];const prev=state.srs[cid];
+    const ns=sched(prev,g,tk);state.srs[cid]=ns;
+    const rl=state.revlog[tk]=Object.assign({n:0,ok:0,fresh:0},state.revlog[tk]);
+    rl.n++;if(g>=2)rl.ok++;if(!prev)rl.fresh++;
+    session.done++;session.shown=false;
+    if(g===0){session.queue.splice(Math.min(session.queue.length,session.idx+4),0,cid)}
+    session.idx++;
+    if(ns.m&&!(prev&&prev.m))msgs.push(["Card mastered",`+${MASTER_XP} INT`]);
+    const left=session.queue.length-session.idx;
+    if(!state.daily[tk]||!state.daily[tk].cards){if(rl.n>=DAILY_REVIEWS||left===0){dayObj().cards=true;msgs.push(["Flashcard quest cleared",`${rl.n} cards reviewed today`])}}
+  }
+  else if(act==="saveCard"){
+    const f=val("cFront"),bk=val("cBack"),deck=val("cDeck");
+    if(!f||!bk){toast("Add a question and an answer","");return}
+    if(studyView==="edit"&&editId){const bi=BUILTIN.find(x=>x.id===editId);
+      if(bi){state.edits[editId]={f,b:bk};if(deck!==bi.deck){/* built-in cards keep their deck */}}
+      else{const m=state.myCards.find(x=>x.id===editId);if(m){m.f=f;m.b=bk;m.deck=deck}}
+      msgs.push(["Card saved",""])}
+    else{state.myCards.push({id:"u"+uid(),deck,f,b:bk});msgs.push(["Card added","It joins today's new cards"])}
+    studyView=browseDeck?"browse":"home";
+  }
+  else if(act==="delCard"){
+    if(BUILTIN.some(x=>x.id===id))state.off[id]=true;else state.myCards=state.myCards.filter(x=>x.id!==id);
+    delete state.srs[id];delArm=null;studyView=browseDeck?"browse":"home";
+    if(session){session.queue=session.queue.filter(x=>x!==id);session.idx=Math.min(session.idx,session.queue.length)}
+    msgs.push(["Card deleted",""]);
+  }
+  else if(act==="saveCase"){
+    const proc=val("kProc"),date=val("kDate")||tk;
+    if(!proc){toast("Add the procedure name","");return}
+    if(date>tk){toast("That date is in the future","");return}
+    const tags=[...document.querySelectorAll("#kTags [aria-pressed=true]")].map(x=>x.dataset.tag);
+    const cs={id:uid(),date,proc,cat:val("kCat"),role:val("kRole"),diff:+val("kDiff")||3,solo:document.getElementById("kSolo").checked,
+      good:val("kGood"),bad:val("kBad"),next:val("kNext"),tags,q:val("kQ")};
+    state.cases.push(cs);
+    if(cs.good||cs.bad||cs.next){const d=state.daily[date]=Object.assign({},state.daily[date]);if(!d.debrief){d.debrief=true;if(date===tk)msgs.push(["Debrief quest cleared",""])}}
+    else msgs.push(["Case saved","Add your three debrief lines next time to clear the quest"]);
+    caseForm=false;
+  }
+  else if(act==="caseDelYes"){state.cases=state.cases.filter(x=>x.id!==id);caseDel=null;caseOpen=null}
+  else if(act==="asked"){const x=state.cases.find(y=>y.id===id);if(x){x.asked=tk;const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);if(!w.consult){w.consult=true;msgs.push(["Consultant quest cleared","+20 WIS"])}}}
+  else return;
   const after=compute(state);
-  // keep skill points valid if levels drop after unticking
   if(after.sp<0){let over=-after.sp;for(const k of Object.keys(state.alloc).reverse()){const t=Math.min(over,+state.alloc[k]||0);state.alloc[k]-=t;over-=t;if(!state.alloc[k])delete state.alloc[k]}}
   const fin=compute(state);
   if(RANKS.indexOf(fin.rank)>RANKS.indexOf(before.rank)) toast("Rank up: "+fin.rank.r,fin.rank.t);
   if(fin.L.lvl>before.L.lvl){toast("Level up",`Level ${fin.L.lvl} · +${SP_PER_LEVEL*(fin.L.lvl-before.L.lvl)} skill points`);
     if(fin.title!==before.title) toast("New title",fin.title);
     if(before.L.lvl<JOB_LEVEL&&fin.L.lvl>=JOB_LEVEL) toast("Job change unlocked","Choose your class on the Hunter tab")}
+  for(const r of fin.roleUps) if(!before.roleUps.includes(r)) toast("Operative milestone",`${ROLE_UP[r].t}: +${ROLE_UP[r].xp} ${ROLE_UP[r].stat}`);
   for(const a of fin.ach) if(!before.ach.includes(a)){const A=ACH.find(x=>x.id===a);toast("Achievement",A.t)}
+  for(const m of msgs) toast(m[0],m[1]);
   if(act==="daily"&&id==="hidden"&&state.daily[tk].hidden) toast("Hidden quest complete","+15 XP","v");
-  else if((act==="daily"||act==="mode")&&!wasCleared&&dayCleared(state.daily[tk])) toast("Daily quest cleared",`+${DAILY_BONUS} XP bonus`);
+  else if(!wasCleared&&dayCleared(state.daily[tk])) toast("Daily quest cleared",`+${DAILY_BONUS} XP bonus`);
   if(act==="dungeon"&&state.dungeons[id]) toast("Gate cleared",`+${DUNGEON_XP} INT`);
   if(act==="boss"&&state.bosses[id]) toast("Boss defeated","Reward claimed");
   render();save();
+  if(act==="saveCase"||act==="saveCard"||act==="delCard")window.scrollTo({top:0});
 });
 
 /* ---------- persistence: this phone only ---------- */
 function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){toast("Couldn't save","Storage is full or blocked")}}
 render();
-document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
+document.addEventListener("visibilitychange",()=>{if(!document.hidden&&!session&&!caseForm&&studyView!=="add"&&studyView!=="edit")render()});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
 })();
 </script>
