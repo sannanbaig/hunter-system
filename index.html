@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: one column "system window" — status panel, sticky tab rail, quest panels. Deliberately single dark look. */
+/* Layout: one column "system window" — status panel, sticky tab rail, panels per tab. Deliberately single dark look. */
 :root{
   --void:#070b16;        /* page ground */
   --panel:#0d1630;       /* system window fill */
@@ -26,40 +26,44 @@
   --gold:#f2c14e;        /* rank / rewards */
   --red:#ff5d6c;         /* penalty */
   --ok:#4fe0b0;          /* cleared */
+  --violet:#b48cff;      /* hidden quests */
   --display:"Chakra Petch",ui-sans-serif,system-ui,sans-serif;
   --body:"Barlow",ui-sans-serif,system-ui,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
   color-scheme:dark;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box}
-:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-body{margin:0;-webkit-tap-highlight-color:transparent}
-[hidden]{display:none!important}
-textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:8px;font-family:var(--mono);font-size:12px}
 html,body{background:var(--void)}
-body{color:var(--ice);font-family:var(--body);font-size:15px;line-height:1.45;
+body{margin:0;-webkit-tap-highlight-color:transparent;color:var(--ice);font-family:var(--body);font-size:15px;line-height:1.45;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 48px;
   background-image:radial-gradient(ellipse 120% 60% at 50% -10%,rgba(79,163,255,.16),transparent 60%);background-attachment:fixed}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--void)}
+[hidden]{display:none!important}
 .wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .win{background:linear-gradient(180deg,rgba(79,163,255,.06),transparent 40%),var(--panel);border:1px solid var(--line);border-radius:4px;
-  box-shadow:0 0 0 1px rgba(79,163,255,.08),0 0 24px rgba(79,163,255,.12) inset;padding:16px;position:relative}
+  box-shadow:0 0 0 1px rgba(79,163,255,.08),0 0 24px rgba(79,163,255,.12) inset;padding:16px;position:relative;min-width:0}
 .win::before,.win::after{content:"";position:absolute;width:10px;height:10px;border:2px solid var(--glow)}
 .win::before{top:-2px;left:-2px;border-right:0;border-bottom:0}
 .win::after{bottom:-2px;right:-2px;border-left:0;border-top:0}
 .eyebrow{font-family:var(--display);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--glow)}
-h1,h2{font-family:var(--display);margin:0;text-wrap:balance}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
 h2{font-size:17px;letter-spacing:.06em;text-transform:uppercase}
+h3{font-size:14px;letter-spacing:.08em;text-transform:uppercase;color:var(--mist);margin-top:4px}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
 .muted{color:var(--mist)}
+.small{font-size:13px}
+p{margin:0}
 
 /* Status */
-.status{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+.status{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-top:10px}
 .rank{width:78px;height:78px;display:grid;place-items:center;border:2px solid var(--gold);border-radius:4px;
   font-family:var(--display);font-weight:700;font-size:44px;color:var(--gold);text-shadow:0 0 14px rgba(242,193,78,.5);
-  box-shadow:0 0 18px rgba(242,193,78,.18) inset}
+  box-shadow:0 0 18px rgba(242,193,78,.18) inset;position:relative}
+.rank small{position:absolute;bottom:3px;font-size:9px;letter-spacing:.16em;color:var(--mist);text-shadow:none}
 .who{min-width:0}
-.who h1{font-size:22px;line-height:1.15}
+.who h1{font-size:20px;line-height:1.15}
+.title{font-family:var(--display);font-size:13px;color:var(--gold);letter-spacing:.06em}
 .lvlrow{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:6px}
 .lvl{font-family:var(--display);font-size:15px}
 .lvl b{font-size:22px;color:var(--glow)}
@@ -68,19 +72,21 @@ h2{font-size:17px;letter-spacing:.06em;text-transform:uppercase}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{font-family:var(--mono);font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:2px;color:var(--mist)}
 .chip b{color:var(--ice)}
-.sync{font-size:11px}
+.chip.sp{border-color:var(--gold);color:var(--gold)}
+.chip.sp b{color:var(--gold)}
 
 .penalty{border-color:var(--red)}
 .penalty::before,.penalty::after{border-color:var(--red)}
 .penalty .eyebrow{color:var(--red)}
 
 /* Tabs */
-.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;
   background:var(--void);padding-block:8px}
-.tabs button{font-family:var(--display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:var(--panel);color:var(--mist);
-  border:1px solid var(--line);border-radius:2px;padding:10px 4px;cursor:pointer}
+.tabs button{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:var(--panel);color:var(--mist);
+  border:1px solid var(--line);border-radius:2px;padding:10px 2px;cursor:pointer;min-width:0}
 .tabs button[aria-selected="true"]{color:var(--void);background:var(--glow);border-color:var(--glow);box-shadow:0 0 14px rgba(79,163,255,.5)}
 button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#view{display:flex;flex-direction:column;gap:14px}
 
 /* Quests */
 .qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}
@@ -91,90 +97,159 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .box{width:24px;height:24px;border:2px solid var(--glow);border-radius:2px;display:grid;place-items:center;font-family:var(--mono);font-weight:700;color:var(--void)}
 .quest.done .box{background:var(--ok);border-color:var(--ok);box-shadow:0 0 10px rgba(79,224,176,.5)}
 .quest.done .qt{color:var(--mist);text-decoration:line-through;text-decoration-color:rgba(131,153,194,.6)}
+.quest.off{opacity:.45}
 .qt{font-weight:600;min-width:0}
 .qd{display:block;font-size:13px;color:var(--mist);font-weight:400}
 .rew{font-family:var(--mono);font-size:12px;color:var(--gold);text-align:right;white-space:nowrap}
 .rew small{display:block;color:var(--mist)}
 .quest.side{border-style:dashed}
+.quest.hidden{border-color:var(--violet);background:rgba(180,140,255,.06)}
+.quest.hidden .box{border-color:var(--violet)}
+.quest.hidden.done .box{background:var(--violet);border-color:var(--violet);box-shadow:0 0 10px rgba(180,140,255,.5)}
+.quest.job{border-color:var(--gold)}
+.tag{display:inline-block;font-family:var(--display);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:1px 6px;border:1px solid currentColor;border-radius:2px;margin-right:6px;vertical-align:1px}
+.tag.v{color:var(--violet)}
+.tag.g{color:var(--gold)}
 .foot{margin-top:12px;font-size:13px;color:var(--mist)}
 .clear{color:var(--ok);font-family:var(--display);letter-spacing:.12em;text-transform:uppercase;font-size:13px}
 
-.restbtn{margin-top:10px;width:100%;font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:13px;
-  background:transparent;color:var(--mist);border:1px dashed var(--line);border-radius:2px;padding:10px;cursor:pointer}
-.restbtn.on{color:var(--void);background:var(--mist);border-style:solid}
+/* day mode */
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:12px}
+.seg button{font-family:var(--display);font-size:12px;letter-spacing:.08em;text-transform:uppercase;background:transparent;color:var(--mist);
+  border:1px solid var(--line);border-radius:2px;padding:9px 4px;cursor:pointer}
+.seg button[aria-pressed="true"]{color:var(--void);background:var(--mist);border-color:var(--mist)}
+.seg button.call[aria-pressed="true"]{background:var(--gold);border-color:var(--gold)}
 
-/* streak strip */
-.strip{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin-top:10px}
-.strip i{aspect-ratio:1;max-width:100%;border:1px solid var(--line);border-radius:2px}
-.strip i.c{background:var(--ok);border-color:var(--ok)}
-.strip i.r{background:var(--mist);border-color:var(--mist);opacity:.6}
-.strip i.m{border-color:var(--red);background:rgba(255,93,108,.15)}
-.strip i.t{outline:1px solid var(--gold);outline-offset:1px}
+/* progress meter for weekly target */
+.pips{display:flex;gap:4px;margin-bottom:12px}
+.pips i{flex:1;height:6px;border:1px solid var(--line);border-radius:1px}
+.pips i.on{background:var(--ok);border-color:var(--ok)}
+.pips i.tgt{border-color:var(--gold)}
+
+/* heatmap */
+.heat{display:grid;grid-template-rows:repeat(7,1fr);grid-auto-flow:column;grid-auto-columns:1fr;gap:3px;margin-top:10px}
+.heat i{aspect-ratio:1;max-width:100%;border-radius:2px;background:rgba(79,163,255,.06);border:1px solid rgba(36,64,122,.6)}
+.heat i.h1{background:rgba(79,224,176,.25);border-color:transparent}
+.heat i.h2{background:rgba(79,224,176,.5);border-color:transparent}
+.heat i.h3{background:rgba(79,224,176,.8);border-color:transparent}
+.heat i.h4{background:var(--ok);border-color:transparent;box-shadow:0 0 6px rgba(79,224,176,.6)}
+.heat i.r{background:rgba(131,153,194,.35);border-color:transparent}
+.heat i.m{background:rgba(255,93,108,.18);border-color:rgba(255,93,108,.5)}
+.heat i.f{opacity:.15}
+.heat i.t{outline:1px solid var(--gold);outline-offset:1px}
 .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;font-size:12px;color:var(--mist)}
-.legend span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:5px;border:1px solid var(--line);vertical-align:-1px}
-.legend .lc::before{background:var(--ok);border-color:var(--ok)}
-.legend .lr::before{background:var(--mist);opacity:.6}
-.legend .lm::before{border-color:var(--red);background:rgba(255,93,108,.15)}
+.legend span::before{content:"";display:inline-block;width:9px;height:9px;margin-right:5px;border:1px solid var(--line);vertical-align:-1px;border-radius:2px}
+.legend .l4::before{background:var(--ok);border-color:var(--ok)}
+.legend .l2::before{background:rgba(79,224,176,.5);border-color:transparent}
+.legend .lr::before{background:rgba(131,153,194,.35);border-color:transparent}
+.legend .lm::before{border-color:rgba(255,93,108,.5);background:rgba(255,93,108,.18)}
+
+/* chart */
+.chart{width:100%;height:auto;display:block;margin-top:8px}
+.chart text{font-family:var(--mono);font-size:9px;fill:var(--mist)}
+.chart .b{fill:rgba(79,163,255,.45)}
+.chart .b.cur{fill:var(--glow)}
+.chart .b.hit{fill:rgba(79,224,176,.6)}
+.chart .tl{stroke:var(--gold);stroke-dasharray:4 3;stroke-width:1}
+.chart .gl{stroke:rgba(36,64,122,.7);stroke-width:1}
+.chart text.tg{fill:var(--gold)}
+.chart text.v{fill:var(--ice);font-weight:700}
+
+/* report + records */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.cell{border:1px solid var(--line);border-radius:2px;padding:10px;background:rgba(7,11,22,.5);min-width:0}
+.cell .k{font-size:12px;color:var(--mist)}
+.cell .v{font-family:var(--mono);font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.cell .d{font-family:var(--mono);font-size:11px}
+.up{color:var(--ok)}.down{color:var(--red)}
 
 /* stats */
-.stats{display:flex;flex-direction:column;gap:12px}
-.stat{display:grid;grid-template-columns:48px 1fr auto;gap:12px;align-items:center}
+.stats{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+.stat{display:grid;grid-template-columns:48px 1fr auto auto;gap:10px;align-items:center}
 .stat .k{font-family:var(--display);font-weight:700;font-size:18px;color:var(--glow)}
 .stat .n{font-size:13px}
-.stat .lv{font-family:var(--mono);font-size:14px;text-align:right}
+.stat .lv{font-family:var(--mono);font-size:14px;text-align:right;white-space:nowrap}
+.stat .lv em{font-style:normal;color:var(--gold)}
 .stat .bar{height:6px;margin-top:4px}
+.plus{width:30px;height:30px;font-family:var(--mono);font-weight:700;font-size:16px;background:transparent;color:var(--gold);border:1px solid var(--gold);border-radius:2px;cursor:pointer}
+.plus:disabled{opacity:.2;cursor:default}
 
-.ranks{display:flex;flex-direction:column;gap:6px;margin-top:4px}
-.rk{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:center;font-size:14px}
-.rk b{font-family:var(--display);font-size:18px;text-align:center;color:var(--mist)}
+/* ranks */
+.ranks{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.rk{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;font-size:14px}
+.rk b{font-family:var(--display);font-size:18px;text-align:center;color:var(--mist);line-height:1.2}
 .rk.got b{color:var(--gold)}
-.rk.cur{color:var(--ice)}
 .rk:not(.got){color:var(--mist)}
+.req{display:block;font-size:12px;font-family:var(--mono)}
+.req .y{color:var(--ok)}.req .n{color:var(--mist)}
+
+/* jobs */
+.jobs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.job{text-align:left;background:rgba(7,11,22,.55);border:1px solid var(--line);border-radius:2px;padding:10px;color:inherit;font:inherit;cursor:pointer;min-width:0}
+.job b{display:block;font-family:var(--display);font-size:14px;color:var(--gold)}
+.job span{display:block;font-size:12px;color:var(--mist)}
+.job[aria-pressed="true"]{border-color:var(--gold);box-shadow:0 0 12px rgba(242,193,78,.25) inset}
+
+/* achievements */
+.ach{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}
+.badge{display:grid;grid-template-columns:30px 1fr;gap:8px;align-items:center;border:1px solid var(--line);border-radius:2px;padding:8px;min-width:0}
+.badge .ic{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--line);border-radius:2px;font-family:var(--display);font-weight:700;color:var(--mist);font-size:13px;transform:rotate(45deg)}
+.badge .ic span{transform:rotate(-45deg)}
+.badge b{display:block;font-size:13px;font-family:var(--display);letter-spacing:.03em}
+.badge small{display:block;font-size:11px;color:var(--mist);line-height:1.3}
+.badge.got{border-color:var(--gold)}
+.badge.got .ic{border-color:var(--gold);color:var(--void);background:var(--gold);box-shadow:0 0 10px rgba(242,193,78,.4)}
+.badge:not(.got) b{color:var(--mist)}
 
 .danger{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
 .btn{font-family:var(--display);letter-spacing:.08em;text-transform:uppercase;font-size:12px;background:transparent;color:var(--mist);
   border:1px solid var(--line);border-radius:2px;padding:8px 12px;cursor:pointer}
 .btn.red{color:var(--red);border-color:var(--red)}
+.btn.gold{color:var(--gold);border-color:var(--gold)}
+textarea{width:100%;min-height:90px;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:8px;font-family:var(--mono);font-size:12px;margin-top:6px}
 
 /* toast */
 .toast{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 70px);transform:translate(-50%,-10px);opacity:0;pointer-events:none;
   z-index:20;background:var(--panel);border:1px solid var(--gold);color:var(--gold);padding:14px 20px;border-radius:2px;text-align:center;
-  font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;box-shadow:0 0 30px rgba(242,193,78,.35);transition:.3s;max-width:calc(100% - 32px)}
+  font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;box-shadow:0 0 30px rgba(242,193,78,.35);transition:.3s;width:max-content;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.v{border-color:var(--violet);color:var(--violet);box-shadow:0 0 30px rgba(180,140,255,.35)}
 .toast small{display:block;color:var(--ice);letter-spacing:.04em;text-transform:none;font-family:var(--body);margin-top:4px}
+@media (max-width:360px){.tabs button{font-size:10px;letter-spacing:.04em}.ach,.jobs{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
-  <section class="win" id="statusWin" aria-label="Status">
+  <section class="win" aria-label="Status">
     <div class="eyebrow">Status window</div>
-    <div class="status" style="margin-top:10px">
-      <div class="rank" id="rank">E</div>
+    <div class="status">
+      <div class="rank" id="rank">E<small>RANK</small></div>
       <div class="who">
-        <h1>Neurosurgery Hunter</h1>
+        <h1 id="name">Neurosurgery Hunter</h1>
+        <div class="title" id="title">Awakened</div>
         <div class="lvlrow"><span class="lvl">LV <b id="lvl">1</b></span><span class="mono muted" id="xpText">0 / 100 XP</span></div>
         <div class="bar"><i id="xpBar" style="width:0%"></i></div>
       </div>
     </div>
     <div class="chips">
-      <span class="chip">Streak <b id="streak">0</b> days</span>
-      <span class="chip">Total <b id="total">0</b> XP</span>
-      <span class="chip sync" id="sync">Saved on this phone</span>
+      <span class="chip">Streak <b id="streak">0</b>d</span>
+      <span class="chip">This week <b id="wkxp">0</b> XP</span>
+      <span class="chip sp" id="spChip" hidden><b id="sp">0</b> skill pts</span>
     </div>
   </section>
 
   <section class="win penalty" id="penalty" hidden>
     <div class="eyebrow">Penalty quest</div>
-    <p style="margin:6px 0 0">Daily quests were missed two days running. Today, clear the minimum viable week only: read the approach for your next case, debrief every case, and protect family time. Clearing today's dailies lifts the penalty.</p>
+    <p style="margin-top:6px">Two days missed in a row. Today, just clear the minimum: debrief any case you do and read the approach for your next one. Clearing today's dailies lifts the penalty.</p>
   </section>
 
   <nav class="tabs" role="tablist" aria-label="Sections">
-    <button role="tab" id="tab-today" aria-selected="true" data-tab="today">Daily</button>
-    <button role="tab" id="tab-week" aria-selected="false" data-tab="week">Weekly</button>
-    <button role="tab" id="tab-gates" aria-selected="false" data-tab="gates">Gates</button>
-    <button role="tab" id="tab-stats" aria-selected="false" data-tab="stats">Stats</button>
+    <button role="tab" id="tab-today" data-tab="today">Daily</button>
+    <button role="tab" id="tab-week" data-tab="week">Weekly</button>
+    <button role="tab" id="tab-gates" data-tab="gates">Gates</button>
+    <button role="tab" id="tab-hunter" data-tab="hunter">Hunter</button>
+    <button role="tab" id="tab-log" data-tab="log">Log</button>
   </nav>
 
   <main id="view"></main>
@@ -183,27 +258,52 @@ button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 
 <script>
 (function(){
+/* ---------- content ---------- */
 const STATS={STR:"Hands",INT:"Knowledge",WIS:"Judgement",END:"Persistence",VIT:"Recovery"};
-const DAILY=[
+const CORE=[
   {id:"cards",t:"Anatomy flashcards",d:"20 minutes",stat:"INT",xp:10},
-  {id:"rehearse",t:"Rehearse every case",d:"Steps, structures at risk, first 3 moves if it goes wrong. No list? Rehearse tomorrow's.",stat:"WIS",xp:10},
-  {id:"debrief",t:"Debrief every case",d:"3 lines: went well, was clumsy, do differently",stat:"STR",xp:10},
+  {id:"rehearse",t:"Rehearse your next case",d:"Steps, structures at risk, first 3 moves if it goes wrong",stat:"WIS",xp:10},
+  {id:"debrief",t:"Debrief today's cases",d:"3 lines: went well, was clumsy, do differently",stat:"STR",xp:10},
 ];
-const SIDE={id:"move",t:"Side quest: move your body",d:"20 min walk, run or gym",stat:"VIT",xp:10};
-const DAILY_BONUS=15;
+const SIDE={id:"move",t:"Move your body",d:"20 min walk, run or gym",stat:"VIT",xp:10};
+const DAILY_BONUS=15, PERFECT_DAY=10;
+const HIDDEN=[
+  {t:"Teach a junior one thing",d:"Intern, student or nurse. Five minutes counts.",stat:"WIS",xp:15},
+  {t:"Draw the circle of Willis from memory",d:"Then check it against an atlas",stat:"INT",xp:15},
+  {t:"Read one abstract in your field",d:"Neurosurgery, JNS, World Neurosurgery or similar",stat:"INT",xp:15},
+  {t:"Read a CT before the report",d:"Commit to your read, then compare",stat:"WIS",xp:15},
+  {t:"Full cranial nerve exam",d:"On a ward patient, all twelve, properly",stat:"STR",xp:15},
+  {t:"Tie 50 instrument knots",d:"Under 2 minutes is a strong time",stat:"STR",xp:15},
+  {t:"Phone-free dinner with family",d:"No ward groups until after",stat:"VIT",xp:15},
+  {t:"Seven hours of sleep",d:"Tick it tomorrow morning if you managed",stat:"VIT",xp:15},
+  {t:"Write 200 words of your paper or protocol",d:"Any section, rough is fine",stat:"END",xp:15},
+  {t:"Explain one GCS change to a family",d:"Plain words, no jargon",stat:"WIS",xp:15},
+  {t:"Name every foramen of the skull base",d:"And what passes through each",stat:"INT",xp:15},
+  {t:"Two minutes of microscope-free suturing drill",d:"Fine sutures on a glove or chicken skin",stat:"STR",xp:15},
+  {t:"Ten minutes on one FCS past question",d:"Write the answer out in full",stat:"END",xp:15},
+  {t:"Thank someone on the team properly",d:"Theatre sister, anaesthetist, porter",stat:"VIT",xp:15},
+];
 const WEEKLY=[
-  {id:"approach",t:"Approach reading for this week's cases",d:"Monday, 45 min",stat:"INT",xp:25},
-  {id:"drill",t:"Microsurgical skills drill",d:"Tuesday, 45 min",stat:"STR",xp:30},
-  {id:"research",t:"Research hour",d:"Wednesday, 60 min",stat:"END",xp:30},
-  {id:"fcs",t:"FCS topic reading",d:"Thursday, 45 min",stat:"INT",xp:25},
-  {id:"crisis",t:"Crisis rehearsal",d:"Friday: sinus bleed, rupture, brain swelling",stat:"WIS",xp:20},
-  {id:"consult",t:"Take a solo-case question to a consultant",d:"After any night case",stat:"WIS",xp:20},
-  {id:"deep",t:"Deep block: research or FCS",d:"Saturday morning, 90 min",stat:"END",xp:40},
-  {id:"famfri",t:"Family evening",d:"Friday, protected",stat:"VIT",xp:25},
-  {id:"famsat",t:"Family Saturday afternoon",d:"Phone away",stat:"VIT",xp:25},
+  {id:"approach",t:"Approach reading for this week's cases",d:"45 min",stat:"INT",xp:25},
+  {id:"drill",t:"Microsurgical skills drill",d:"45 min",stat:"STR",xp:30},
+  {id:"research",t:"Research hour",d:"60 min on the paper or MMed",stat:"END",xp:30},
+  {id:"fcs",t:"FCS topic reading",d:"45 min on this month's gate",stat:"INT",xp:25},
+  {id:"crisis",t:"Crisis rehearsal",d:"Sinus bleed, aneurysm rupture or brain swelling",stat:"WIS",xp:20},
+  {id:"consult",t:"Take a case question to a consultant",d:"Especially after a solo night case",stat:"WIS",xp:20},
+  {id:"deep",t:"Deep block: research or FCS",d:"90 min, weekend",stat:"END",xp:40},
+  {id:"famfri",t:"Family evening",d:"Protected, phone away",stat:"VIT",xp:25},
+  {id:"famsat",t:"Family half-day",d:"Weekend, phone away",stat:"VIT",xp:25},
   {id:"review",t:"Sunday review",d:"Count blocks, plan next week's cases",stat:"WIS",xp:15},
 ];
-const WEEK_BONUS=100;
+const WEEK_TARGET=7, WEEK_BONUS=60, PERFECT_WEEK=40, WEEK_XP_GOAL=400;
+const JOBS=[
+  {id:"spine",t:"Spine Hunter",d:"Cervical and lumbar mastery",stat:"STR",q:{t:"Review one spine case with a consultant",d:"Imaging, plan, levels, fixation choice",xp:25}},
+  {id:"vascular",t:"Vascular Mage",d:"Aneurysms, AVMs, the Sylvian fissure",stat:"INT",q:{t:"Study one CTA end to end",d:"Find the aneurysm, measure it, plan the clip",xp:25}},
+  {id:"trauma",t:"Trauma Knight",d:"Decompression under pressure",stat:"WIS",q:{t:"Audit one TBI decision",d:"Would you operate again? What did the CT say?",xp:25}},
+  {id:"onc",t:"Tumour Assassin",d:"Resection and the margins",stat:"INT",q:{t:"Plan one tumour approach from MRI",d:"Corridor, eloquent cortex, extent of resection",xp:25}},
+  {id:"paeds",t:"Paediatric Guardian",d:"Shunts, ETV, small brains",stat:"VIT",q:{t:"Review one shunt or hydrocephalus case",d:"Indication, valve, complications to watch",xp:25}},
+  {id:"func",t:"Functional Sage",d:"Nerves, pain, movement",stat:"WIS",q:{t:"Examine one peripheral nerve problem fully",d:"Motor, sensory, provocative tests",xp:25}},
+];
 const DUNGEONS=[
   {id:"trauma",t:"Trauma",d:"Trauma craniotomy, DECRA, burr holes"},
   {id:"cspine",t:"Cervical spine",d:"ACDF, posterior cervical fixation"},
@@ -216,186 +316,370 @@ const DUNGEONS=[
 ];
 const DUNGEON_XP=120;
 const BOSSES=[
-  {id:"registrar",t:"Registrar post begins",stat:"END",xp:300},
-  {id:"paper",t:"Aneurysm/HIV paper submitted",stat:"END",xp:400},
-  {id:"protocol",t:"MMed protocol approved",stat:"END",xp:300},
-  {id:"data",t:"MMed data collection complete",stat:"END",xp:300},
-  {id:"fcs",t:"FCS final passed",stat:"INT",xp:1000},
-  {id:"consultant",t:"Consultant post",stat:"WIS",xp:1000},
+  {id:"registrar",t:"Registrar post begins",when:"Next intake",stat:"END",xp:300},
+  {id:"paper",t:"Aneurysm/HIV paper submitted",when:"Within year 1",stat:"END",xp:400},
+  {id:"protocol",t:"MMed protocol approved",when:"Year 1",stat:"END",xp:300},
+  {id:"data",t:"MMed data collection complete",when:"Year 2 to 3",stat:"END",xp:300},
+  {id:"fcs",t:"FCS final passed",when:"Year 4 to 5",stat:"INT",xp:1000},
+  {id:"consultant",t:"Consultant post",when:"After FCS",stat:"WIS",xp:1000},
 ];
 const RANKS=[
-  {r:"E",t:"Medical officer",need:[]},
-  {r:"D",t:"Registrar",need:["registrar"]},
-  {r:"C",t:"Paper submitted, MMed approved",need:["registrar","paper","protocol"]},
-  {r:"B",t:"MMed data complete",need:["registrar","paper","protocol","data"]},
-  {r:"A",t:"FCS final passed",need:["registrar","paper","protocol","data","fcs"]},
-  {r:"S",t:"Consultant",need:["registrar","paper","protocol","data","fcs","consultant"]},
+  {r:"E",t:"Medical officer",lvl:1,need:[]},
+  {r:"D",t:"Registrar",lvl:5,need:["registrar"]},
+  {r:"C",t:"Researcher",lvl:20,need:["registrar","paper","protocol"]},
+  {r:"B",t:"Senior registrar",lvl:40,need:["registrar","paper","protocol","data"]},
+  {r:"A",t:"Specialist",lvl:60,need:["registrar","paper","protocol","data","fcs"]},
+  {r:"S",t:"Consultant",lvl:80,need:["registrar","paper","protocol","data","fcs","consultant"]},
+];
+const TITLES=[
+  [1,"Awakened"],[5,"Night-Call Survivor"],[10,"Burr-Hole Apprentice"],[15,"Dural Closer"],[20,"Microscope Initiate"],
+  [30,"Sylvian Splitter"],[40,"Skull-Base Seeker"],[50,"Clip Bearer"],[65,"Shadow of the Theatre"],[80,"Monarch in Waiting"],[100,"Monarch of the Neuraxis"],
+];
+const JOB_LEVEL=10, SP_PER_LEVEL=3;
+const ACH=[
+  {id:"first",t:"Arise",d:"Complete your first quest",ic:"I",test:c=>c.quests>=1},
+  {id:"day1",t:"Daily cleared",d:"Clear a day's dailies",ic:"D",test:c=>c.daysCleared>=1},
+  {id:"perfectday",t:"Flawless",d:"All three core quests in a day",ic:"F",test:c=>c.perfectDays>=1},
+  {id:"s7",t:"One week strong",d:"7-day streak",ic:"7",test:c=>c.bestStreak>=7},
+  {id:"s30",t:"Unbroken",d:"30-day streak",ic:"30",test:c=>c.bestStreak>=30},
+  {id:"s100",t:"Iron will",d:"100-day streak",ic:"C",test:c=>c.bestStreak>=100},
+  {id:"week",t:"Week cleared",d:`Clear ${WEEK_TARGET} weekly quests`,ic:"W",test:c=>c.weeksCleared>=1},
+  {id:"perfectweek",t:"Perfect week",d:"Every weekly quest done",ic:"P",test:c=>c.perfectWeeks>=1},
+  {id:"month",t:"Month of discipline",d:"4 cleared weeks in a row",ic:"M",test:c=>c.bestWeekRun>=4},
+  {id:"oncall",t:"Night shift",d:"Clear 5 on-call days",ic:"N",test:c=>c.callClears>=5},
+  {id:"hidden10",t:"Secret seeker",d:"10 hidden quests",ic:"?",test:c=>c.hidden>=10},
+  {id:"gate1",t:"Gate breaker",d:"Clear your first gate",ic:"G",test:c=>c.gates>=1},
+  {id:"gate8",t:"Dungeon master",d:"Clear all eight gates",ic:"8",test:c=>c.gates>=8},
+  {id:"boss1",t:"First boss",d:"Defeat a milestone",ic:"B",test:c=>c.bossCount>=1},
+  {id:"job",t:"Job change",d:`Choose a class at level ${JOB_LEVEL}`,ic:"J",test:c=>!!c.job},
+  {id:"balanced",t:"Balanced hunter",d:"Every stat at level 5",ic:"5",test:c=>Object.values(c.statLv).every(v=>v>=5)},
+  {id:"l25",t:"Level 25",d:"Roughly five months of steady work",ic:"25",test:c=>c.L.lvl>=25},
+  {id:"l50",t:"Level 50",d:"Halfway to the Monarch",ic:"50",test:c=>c.L.lvl>=50},
 ];
 
+/* ---------- dates ---------- */
 const pad=n=>String(n).padStart(2,"0");
 const ymd=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse=k=>new Date(k+"T00:00:00");
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const weekKey=d=>{const x=new Date(d);const wd=(x.getDay()+6)%7;return ymd(addDays(x,-wd))};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const fmt=(k,o)=>parse(k).toLocaleDateString("en-ZA",o);
+function hiddenFor(k){let h=0;for(const ch of k)h=(h*31+ch.charCodeAt(0))>>>0;return HIDDEN[h%HIDDEN.length]}
 
-function blank(){return {start:ymd(new Date()),daily:{},weekly:{},dungeons:{},bosses:{}}}
-function norm(s){const b=blank();if(!s||typeof s!=="object")return b;
-  return {start:s.start||b.start,daily:s.daily||{},weekly:s.weekly||{},dungeons:s.dungeons||{},bosses:s.bosses||{}}}
+/* ---------- levelling: paced to about five years of registrar training ---------- */
+function levelInfo(xp){let L=1,acc=0,need=100;while(xp>=acc+need){acc+=need;L++;need=100+25*(L-1)}return {lvl:L,into:xp-acc,need}}
+function statLevel(xp){let L=1,acc=0,need=60;while(xp>=acc+need){acc+=need;L++;need=60+15*(L-1)}return {lvl:L,into:xp-acc,need}}
 
+/* ---------- state ---------- */
 const LS="hunter-system-v1";
+function blank(){return {start:ymd(new Date()),daily:{},weekly:{},dungeons:{},bosses:{},alloc:{},job:null,name:""}}
+function norm(s){const b=blank();if(!s||typeof s!=="object")return b;
+  return {start:s.start||b.start,daily:s.daily||{},weekly:s.weekly||{},dungeons:s.dungeons||{},bosses:s.bosses||{},
+    alloc:s.alloc||{},job:s.job||null,name:typeof s.name==="string"?s.name:""}}
 let state=blank();
 try{const raw=localStorage.getItem(LS);if(raw)state=norm(JSON.parse(raw))}catch(e){}
 
-const cleared=day=>!!day&&DAILY.every(q=>day[q.id]);
-function compute(s){
-  const st={STR:0,INT:0,WIS:0,END:0,VIT:0};let bonus=0;
-  for(const k in s.daily){const day=s.daily[k];
-    for(const q of DAILY.concat(SIDE)) if(day[q.id]) st[q.stat]+=q.xp;
-    if(cleared(day)) bonus+=DAILY_BONUS;}
-  for(const k in s.weekly){const w=s.weekly[k];
-    for(const q of WEEKLY) if(w[q.id]) st[q.stat]+=q.xp;
-    if(WEEKLY.every(q=>w[q.id])) bonus+=WEEK_BONUS;}
-  for(const d of DUNGEONS) if(s.dungeons[d.id]) st.INT+=DUNGEON_XP;
-  for(const b of BOSSES) if(s.bosses[b.id]) st[b.stat]+=b.xp;
-  const total=Object.values(st).reduce((a,b)=>a+b,0)+bonus;
-  let rank=RANKS[0];for(const r of RANKS) if(r.need.every(id=>s.bosses[id])) rank=r;
-  return {st,total,rank};
-}
-function level(xp,base){let n=0;while(base*(n+1)*(n+2)/2<=xp)n++;
-  const lo=base*n*(n+1)/2,hi=base*(n+1)*(n+2)/2;return {lvl:n+1,into:xp-lo,need:hi-lo}}
+/* day rules: normal = 2 of 3 core; on call = debrief; rest = protected */
+function coreCount(day){return day?CORE.filter(q=>day[q.id]).length:0}
+function dayCleared(day){if(!day||day.rest)return false;return day.call?!!day.debrief:coreCount(day)>=2}
+function dayOk(day){return dayCleared(day)||!!(day&&day.rest)}
+function weekCount(w){return w?WEEKLY.filter(q=>w[q.id]).length+(w.job?1:0):0}
+function weekTotal(){return WEEKLY.length+(state.job?1:0)}
 
-function streak(s){
-  const today=new Date();let d=today,n=0;
-  const ok=k=>{const day=s.daily[k];return cleared(day)||(day&&day.rest)};
-  if(!ok(ymd(d))) d=addDays(d,-1);
-  while(ok(ymd(d))){n++;d=addDays(d,-1)}
-  return n;
+function compute(s){
+  const st={STR:0,INT:0,WIS:0,END:0,VIT:0};
+  const wk={};const addW=(k,x)=>{wk[k]=(wk[k]||0)+x};
+  let total=0;const add=(stat,x,k)=>{st[stat]+=x;total+=x;if(k)addW(weekKey(parse(k)),x)};
+  let quests=0,daysCleared=0,perfectDays=0,callClears=0,hidden=0;
+  for(const k in s.daily){const day=s.daily[k];
+    for(const q of CORE.concat(SIDE)) if(day[q.id]){add(q.stat,q.xp,k);quests++}
+    if(day.hidden){const h=hiddenFor(k);add(h.stat,h.xp,k);quests++;hidden++}
+    if(dayCleared(day)){total+=DAILY_BONUS;addW(weekKey(parse(k)),DAILY_BONUS);daysCleared++;if(day.call)callClears++}
+    if(!day.rest&&!day.call&&coreCount(day)===3){total+=PERFECT_DAY;addW(weekKey(parse(k)),PERFECT_DAY);perfectDays++}}
+  let weeksCleared=0,perfectWeeks=0;
+  const job=JOBS.find(j=>j.id===s.job);
+  for(const k in s.weekly){const w=s.weekly[k];
+    for(const q of WEEKLY) if(w[q.id]){add(q.stat,q.xp,k);quests++}
+    if(w.job&&job){add(job.stat,job.q.xp,k);quests++}
+    const n=WEEKLY.filter(q=>w[q.id]).length+(w.job?1:0);
+    if(n>=WEEK_TARGET){total+=WEEK_BONUS;addW(k,WEEK_BONUS);weeksCleared++}
+    if(WEEKLY.every(q=>w[q.id])){total+=PERFECT_WEEK;addW(k,PERFECT_WEEK);perfectWeeks++}}
+  let gates=0;for(const d of DUNGEONS) if(s.dungeons[d.id]){add("INT",DUNGEON_XP,s.dungeons[d.id]);gates++;quests++}
+  let bossCount=0;for(const b of BOSSES) if(s.bosses[b.id]){add(b.stat,b.xp,s.bosses[b.id]);bossCount++}
+  const L=levelInfo(total);
+  const spent=Object.values(s.alloc).reduce((a,b)=>a+(+b||0),0);
+  const sp=SP_PER_LEVEL*(L.lvl-1)-spent;
+  const statLv={};const statInfo={};
+  for(const k in STATS){const i=statLevel(st[k]);statInfo[k]=i;statLv[k]=i.lvl+(+s.alloc[k]||0)}
+  let rank=RANKS[0];for(const r of RANKS) if(L.lvl>=r.lvl&&r.need.every(id=>s.bosses[id])) rank=r;
+  let title=TITLES[0][1];for(const [lv,t] of TITLES) if(L.lvl>=lv) title=t;
+  // streaks
+  const today=ymd(new Date());let run=0,best=0;
+  for(let d=parse(s.start<today?s.start:today);ymd(d)<=today;d=addDays(d,1)){const k=ymd(d);
+    if(dayOk(s.daily[k])){run++;best=Math.max(best,run)}else if(k!==today)run=0}
+  let cur=0;{let d=new Date();if(!dayOk(s.daily[ymd(d)]))d=addDays(d,-1);while(dayOk(s.daily[ymd(d)])){cur++;d=addDays(d,-1)}}
+  // weekly runs
+  let wrun=0,bestWeekRun=0;const thisWk=weekKey(new Date());
+  for(let d=parse(weekKey(parse(s.start))),guard=0;ymd(d)<=thisWk&&guard<600;d=addDays(d,7),guard++){const k=ymd(d);
+    if(weekCount(s.weekly[k])>=WEEK_TARGET){wrun++;bestWeekRun=Math.max(bestWeekRun,wrun)}else if(k!==thisWk)wrun=0}
+  const bestWeek=Math.max(0,...Object.values(wk));
+  const c={st,statInfo,statLv,total,L,sp,spent,rank,title,wk,quests,daysCleared,perfectDays,callClears,hidden,weeksCleared,perfectWeeks,
+    gates,bossCount,bestStreak:Math.max(best,cur),streak:cur,bestWeekRun,bestWeek,job:s.job};
+  c.ach=ACH.filter(a=>a.test(c)).map(a=>a.id);
+  return c;
 }
 function penalty(s){
-  const t=new Date();const tk=ymd(t);
-  if(cleared(s.daily[tk])||(s.daily[tk]&&s.daily[tk].rest)) return false;
+  const t=new Date();if(dayOk(s.daily[ymd(t)]))return false;
   const k1=ymd(addDays(t,-1)),k2=ymd(addDays(t,-2));
-  if(k2<s.start) return false;
-  const miss=k=>{const day=s.daily[k];return !(cleared(day)||(day&&day.rest))};
-  return miss(k1)&&miss(k2);
+  if(k2<s.start)return false;
+  return !dayOk(s.daily[k1])&&!dayOk(s.daily[k2]);
 }
 
+/* ---------- view ---------- */
 let tab="today";
-try{const h=location.hash.slice(1);if(["today","week","gates","stats"].includes(h))tab=h}catch(e){}
-let resetArm=false,restoreOpen=false,backupShow=false;
+try{const h=location.hash.slice(1);if(["today","week","gates","hunter","log"].includes(h))tab=h}catch(e){}
+let resetArm=false,restoreOpen=false,backupShow=false,jobPick=false;
 
-function questBtn(act,id,q,done,extra){
-  return `<button class="quest${done?" done":""}${extra||""}" data-act="${act}" data-id="${id}" aria-pressed="${done}">
+function questBtn(act,id,q,done,cls,tag){
+  return `<button class="quest${done?" done":""}${cls||""}" data-act="${act}" data-id="${id}" aria-pressed="${done}">
     <span class="box" aria-hidden="true">${done?"✓":""}</span>
-    <span class="qt">${esc(q.t)}<span class="qd">${esc(q.d||"")}</span></span>
+    <span class="qt">${tag||""}${esc(q.t)}<span class="qd">${esc(q.d||"")}</span></span>
     <span class="rew">+${q.xp} XP<small>${q.stat||""}</small></span></button>`;
 }
 
+function weekChart(c){
+  const now=new Date();const keys=[];for(let i=11;i>=0;i--)keys.push(weekKey(addDays(now,-7*i)));
+  const vals=keys.map(k=>c.wk[k]||0);
+  const max=Math.max(WEEK_XP_GOAL*1.25,...vals);
+  const W=340,H=150,top=16,bot=22,left=4,right=4,ih=H-top-bot,bw=(W-left-right)/12;
+  const y=v=>top+ih-ih*v/max;
+  let s=`<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="XP per week, last 12 weeks">`;
+  s+=`<line class="gl" x1="${left}" x2="${W-right}" y1="${top+ih}" y2="${top+ih}"/>`;
+  s+=`<line class="tl" x1="${left}" x2="${W-right}" y1="${y(WEEK_XP_GOAL)}" y2="${y(WEEK_XP_GOAL)}"/>`;
+  s+=`<text class="tg" x="${W-right}" y="${y(WEEK_XP_GOAL)-4}" text-anchor="end">goal ${WEEK_XP_GOAL}</text>`;
+  keys.forEach((k,i)=>{const v=vals[i],x=left+i*bw+3,h=Math.max(v?2:0,ih*v/max);const cur=i===11;
+    s+=`<rect class="b${cur?" cur":v>=WEEK_XP_GOAL?" hit":""}" x="${x.toFixed(1)}" y="${(top+ih-h).toFixed(1)}" width="${(bw-6).toFixed(1)}" height="${h.toFixed(1)}" rx="1"><title>${fmt(k,{day:"numeric",month:"short"})}: ${v} XP</title></rect>`;
+    if(cur&&v) s+=`<text class="v" x="${(x+(bw-6)/2).toFixed(1)}" y="${(top+ih-h-4).toFixed(1)}" text-anchor="middle">${v}</text>`;
+    if(i%3===0||cur) s+=`<text x="${(x+(bw-6)/2).toFixed(1)}" y="${H-6}" text-anchor="middle">${cur?"now":fmt(k,{day:"numeric",month:"short"})}</text>`;
+  });
+  return s+"</svg>";
+}
+
+function heatmap(){
+  const now=new Date();const tk=ymd(now);const startMon=parse(weekKey(addDays(now,-7*15)));
+  let h="";
+  for(let i=0;i<16*7;i++){const d=addDays(startMon,i),k=ymd(d),day=state.daily[k];
+    let cls="";
+    if(k>tk)cls="f";
+    else if(day&&day.rest)cls="r";
+    else if(day){const n=coreCount(day)+(day.move?1:0)+(day.hidden?1:0);
+      if(dayCleared(day))cls=n>=4?"h4":n>=3?"h3":"h2";else if(n>0)cls="h1";else if(k<tk&&k>=state.start)cls="m"}
+    else if(k<tk&&k>=state.start)cls="m";
+    if(k===tk)cls+=" t";
+    h+=`<i class="${cls}" title="${k}"></i>`}
+  return `<div class="heat" aria-label="Last 16 weeks of daily activity">${h}</div>`;
+}
+
 function render(){
-  const c=compute(state),L=level(c.total,100);
-  document.getElementById("rank").textContent=c.rank.r;
-  document.getElementById("lvl").textContent=L.lvl;
-  document.getElementById("xpText").textContent=`${L.into} / ${L.need} XP`;
-  document.getElementById("xpBar").style.width=(100*L.into/L.need).toFixed(1)+"%";
-  document.getElementById("streak").textContent=streak(state);
-  document.getElementById("total").textContent=c.total.toLocaleString();
+  const c=compute(state);
+  const now=new Date(),tk=ymd(now),wk=weekKey(now);
+  document.getElementById("rank").firstChild.nodeValue=c.rank.r;
+  document.getElementById("name").textContent=state.name||"Neurosurgery Hunter";
+  const job=JOBS.find(j=>j.id===state.job);
+  document.getElementById("title").textContent=c.title+(job?" · "+job.t:"");
+  document.getElementById("lvl").textContent=c.L.lvl;
+  document.getElementById("xpText").textContent=`${c.L.into} / ${c.L.need} XP`;
+  document.getElementById("xpBar").style.width=(100*c.L.into/c.L.need).toFixed(1)+"%";
+  document.getElementById("streak").textContent=c.streak;
+  document.getElementById("wkxp").textContent=c.wk[wk]||0;
+  document.getElementById("sp").textContent=c.sp;
+  document.getElementById("spChip").hidden=c.sp<=0;
   document.getElementById("penalty").hidden=!penalty(state);
   document.querySelectorAll(".tabs button").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.tab===tab)));
   const v=document.getElementById("view");
-  const now=new Date(),tk=ymd(now),wk=weekKey(now);
+
   if(tab==="today"){
-    const day=state.daily[tk]||{};
-    const done=DAILY.filter(q=>day[q.id]).length;
-    let strip="";for(let i=13;i>=0;i--){const k=ymd(addDays(now,-i)),d=state.daily[k];
-      let cls=cleared(d)?"c":(d&&d.rest)?"r":(k<state.start||i===0)?"":"m";if(i===0)cls+=" t";strip+=`<i class="${cls}" title="${k}"></i>`}
+    const day=state.daily[tk]||{};const mode=day.rest?"rest":day.call?"call":"normal";
+    const h=hiddenFor(tk);
+    const rule=mode==="call"?"On call: debrief your cases to clear the day.":mode==="rest"?"Rest day: your streak is protected. Recover.":"Clear 2 of 3 core quests. All 3 earns a Flawless bonus.";
     v.innerHTML=`<section class="win">
       <div class="qhead"><div><div class="eyebrow">Daily quest</div><h2>${now.toLocaleDateString("en-ZA",{weekday:"long",day:"numeric",month:"long"})}</h2></div>
-      <span class="mono muted">${done}/${DAILY.length}</span></div>
-      <div class="qlist">${DAILY.map(q=>questBtn("daily",q.id,q,!!day[q.id])).join("")}${questBtn("daily",SIDE.id,SIDE,!!day[SIDE.id]," side")}</div>
-      ${cleared(day)?`<p class="foot"><span class="clear">Daily quest cleared</span> · +${DAILY_BONUS} XP bonus</p>`:`<p class="foot">Clear the three core quests for a +${DAILY_BONUS} XP bonus.</p>`}
-      <button class="restbtn${day.rest?" on":""}" data-act="rest" aria-pressed="${!!day.rest}">${day.rest?"Rest day set: streak protected":"Post-call or sick? Mark rest day"}</button>
+      <span class="mono muted">${coreCount(day)}/3</span></div>
+      <div class="seg" role="group" aria-label="Day type">
+        <button data-act="mode" data-id="normal" aria-pressed="${mode==="normal"}">Normal</button>
+        <button class="call" data-act="mode" data-id="call" aria-pressed="${mode==="call"}">On call</button>
+        <button data-act="mode" data-id="rest" aria-pressed="${mode==="rest"}">Post-call</button>
+      </div>
+      <p class="small muted" style="margin-bottom:10px">${rule}</p>
+      <div class="qlist">${CORE.map(q=>questBtn("daily",q.id,q,!!day[q.id],(mode==="call"&&q.id!=="debrief")||mode==="rest"?" off":"")).join("")}
+      ${questBtn("daily",SIDE.id,SIDE,!!day[SIDE.id]," side",'<span class="tag">Side</span>')}</div>
+      ${dayCleared(day)?`<p class="foot"><span class="clear">Daily quest cleared</span> · +${DAILY_BONUS} XP${!day.call&&coreCount(day)===3?` · Flawless +${PERFECT_DAY}`:""}</p>`:""}
     </section>
-    <section class="win"><div class="eyebrow">Last 14 days</div>
-      <div class="strip">${strip}</div>
-      <div class="legend"><span class="lc">Cleared</span><span class="lr">Rest</span><span class="lm">Missed</span></div></section>`;
+    <section class="win">
+      <div class="qhead"><div><div class="eyebrow" style="color:var(--violet)">Hidden quest</div><h2>Appears once, today only</h2></div></div>
+      <div class="qlist">${questBtn("daily","hidden",h,!!day.hidden," hidden",'<span class="tag v">Hidden</span>')}</div>
+    </section>`;
   }else if(tab==="week"){
-    const w=state.weekly[wk]||{};const n=WEEKLY.filter(q=>w[q.id]).length;
-    const mon=new Date(wk+"T00:00:00");
+    const w=state.weekly[wk]||{};const n=weekCount(w),tot=weekTotal();
+    const mon=parse(wk);
+    let pips="";for(let i=0;i<tot;i++)pips+=`<i class="${i<n?"on":""}${i===WEEK_TARGET-1?" tgt":""}"></i>`;
     v.innerHTML=`<section class="win">
       <div class="qhead"><div><div class="eyebrow">Weekly quests</div><h2>Week of ${mon.toLocaleDateString("en-ZA",{day:"numeric",month:"short"})}</h2></div>
-      <span class="mono muted">${n}/${WEEKLY.length}</span></div>
-      <div class="qlist">${WEEKLY.map(q=>questBtn("weekly",q.id,q,!!w[q.id])).join("")}</div>
-      ${n===WEEKLY.length?`<p class="foot"><span class="clear">Week cleared</span> · +${WEEK_BONUS} XP bonus</p>`:`<p class="foot">Clear every weekly quest for +${WEEK_BONUS} XP. Heavy call week? The minimum is approach reading, research hour and both family blocks.</p>`}
+      <span class="mono muted">${n}/${tot}</span></div>
+      <div class="pips" aria-label="${n} of ${tot} done, target ${WEEK_TARGET}">${pips}</div>
+      <p class="small muted" style="margin-bottom:10px">Target is ${WEEK_TARGET} of ${tot}. Call weeks happen, so you don't need them all. Doing every core quest earns Perfect week.</p>
+      <div class="qlist">${job?questBtn("weekly","job",{...job.q,stat:job.stat},!!w.job," job",'<span class="tag g">Class</span>'):""}${WEEKLY.map(q=>questBtn("weekly",q.id,q,!!w[q.id])).join("")}</div>
+      ${n>=WEEK_TARGET?`<p class="foot"><span class="clear">Week cleared</span> · +${WEEK_BONUS} XP${WEEKLY.every(q=>w[q.id])?` · Perfect week +${PERFECT_WEEK}`:""}</p>`:`<p class="foot">${WEEK_TARGET-n} more to clear the week for +${WEEK_BONUS} XP.</p>`}
     </section>`;
   }else if(tab==="gates"){
-    const next=DUNGEONS.find(d=>!state.dungeons[d.id]);
+    const sm=parse(state.start);
+    const due=i=>{const d=new Date(sm.getFullYear(),sm.getMonth()+i+1,0);return d};
+    const nextIdx=DUNGEONS.findIndex(d=>!state.dungeons[d.id]);
     v.innerHTML=`<section class="win">
       <div class="qhead"><div><div class="eyebrow">Dungeons · one per month</div><h2>Reading gates</h2></div>
-      <span class="mono muted">${DUNGEONS.filter(d=>state.dungeons[d.id]).length}/${DUNGEONS.length}</span></div>
-      <p class="muted" style="margin:0 0 10px;font-size:13px">A gate clears when you finish its FCS past-paper questions.${next?` Current gate: <b style="color:var(--ice)">${esc(next.t)}</b>.`:""}</p>
-      <div class="qlist">${DUNGEONS.map(d=>questBtn("dungeon",d.id,{t:d.t,d:d.d,xp:DUNGEON_XP,stat:"INT"},!!state.dungeons[d.id])).join("")}</div>
+      <span class="mono muted">${c.gates}/${DUNGEONS.length}</span></div>
+      <p class="small muted" style="margin-bottom:10px">A gate clears when you finish its FCS past-paper questions. One a month keeps the full cycle to eight months.</p>
+      <div class="qlist">${DUNGEONS.map((d,i)=>{const dd=due(i),late=!state.dungeons[d.id]&&dd<now;
+        const when=state.dungeons[d.id]?"Cleared "+fmt(state.dungeons[d.id],{day:"numeric",month:"short"}):(late?"Overdue · was due ":"Due ")+dd.toLocaleDateString("en-ZA",{month:"short",year:"numeric"});
+        return questBtn("dungeon",d.id,{t:d.t,d:d.d+" · "+when,xp:DUNGEON_XP,stat:"INT"},!!state.dungeons[d.id],i===nextIdx?" job":"",i===nextIdx?'<span class="tag g">Current</span>':"")}).join("")}</div>
     </section>
     <section class="win"><div class="qhead"><div><div class="eyebrow">Boss fights</div><h2>Milestones</h2></div></div>
-      <div class="qlist">${BOSSES.map(b=>questBtn("boss",b.id,{t:b.t,d:state.bosses[b.id]?"Defeated "+state.bosses[b.id]:"Not yet",xp:b.xp,stat:b.stat},!!state.bosses[b.id])).join("")}</div>
+      <div class="qlist">${BOSSES.map(b=>questBtn("boss",b.id,{t:b.t,d:state.bosses[b.id]?"Defeated "+fmt(state.bosses[b.id],{day:"numeric",month:"short",year:"numeric"}):"Typical timing: "+b.when,xp:b.xp,stat:b.stat},!!state.bosses[b.id])).join("")}</div>
     </section>`;
-  }else{
+  }else if(tab==="hunter"){
     const curIdx=RANKS.indexOf(c.rank);
-    v.innerHTML=`<section class="win"><div class="eyebrow">Attributes</div>
-      <div class="stats" style="margin-top:12px">${Object.keys(STATS).map(k=>{const s=level(c.st[k],40);
-        return `<div class="stat"><span class="k">${k}</span><div><div class="n">${STATS[k]} <span class="muted mono" style="font-size:12px">${c.st[k]} XP</span></div>
-        <div class="bar"><i style="width:${(100*s.into/s.need).toFixed(1)}%"></i></div></div><span class="lv">LV ${s.lvl}</span></div>`}).join("")}</div>
+    const canJob=c.L.lvl>=JOB_LEVEL;
+    v.innerHTML=`<section class="win"><div class="qhead"><div><div class="eyebrow">Attributes</div><h2>Stats</h2></div>
+      <span class="mono small ${c.sp>0?"":"muted"}" style="${c.sp>0?"color:var(--gold)":""}">${c.sp} skill pts</span></div>
+      <p class="small muted">Stats grow from quests. You also earn ${SP_PER_LEVEL} skill points per level to spend where you choose.</p>
+      <div class="stats">${Object.keys(STATS).map(k=>{const s=c.statInfo[k],a=+state.alloc[k]||0;
+        return `<div class="stat"><span class="k">${k}</span><div style="min-width:0"><div class="n">${STATS[k]} <span class="muted mono" style="font-size:12px">${c.st[k]} XP</span></div>
+        <div class="bar"><i style="width:${(100*s.into/s.need).toFixed(1)}%"></i></div></div>
+        <span class="lv">LV ${c.statLv[k]}${a?` <em>+${a}</em>`:""}</span>
+        <button class="plus" data-act="alloc" data-id="${k}" ${c.sp>0?"":"disabled"} aria-label="Add a skill point to ${STATS[k]}">+</button></div>`}).join("")}</div>
+      ${c.spent?`<div class="danger"><button class="btn" data-act="realloc">Refund skill points</button></div>`:""}
     </section>
-    <section class="win"><div class="eyebrow">Rank ladder</div>
-      <div class="ranks" style="margin-top:10px">${RANKS.map((r,i)=>`<div class="rk${i<=curIdx?" got":""}${i===curIdx?" cur":""}"><b>${r.r}</b><span>${esc(r.t)}${i===curIdx?" · current":""}</span></div>`).join("")}</div>
-      <p class="foot">Ranks rise only from boss fights, never from case numbers.</p>
+    <section class="win"><div class="qhead"><div><div class="eyebrow">Job change</div><h2>${job?esc(job.t):"Class"}</h2></div></div>
+      ${!canJob?`<p class="small muted">Unlocks at level ${JOB_LEVEL}. Your class adds one themed weekly quest that feeds its stat.</p>`:
+        job&&!jobPick?`<p class="small">${esc(job.d)}. Weekly class quest: <b>${esc(job.q.t)}</b> (+${job.q.xp} ${job.stat}).</p><div class="danger"><button class="btn" data-act="jobPick">Change class</button></div>`:
+        `<p class="small muted">Choose your path. You can change it later.</p><div class="jobs">${JOBS.map(j=>`<button class="job" data-act="job" data-id="${j.id}" aria-pressed="${state.job===j.id}"><b>${esc(j.t)}</b><span>${esc(j.d)} · ${j.stat}</span></button>`).join("")}</div>`}
+    </section>
+    <section class="win"><div class="eyebrow">Rank reassessment</div>
+      <p class="small muted" style="margin-top:6px">A rank needs both the level and the real milestones.</p>
+      <div class="ranks">${RANKS.map((r,i)=>`<div class="rk${i<=curIdx?" got":""}"><b>${r.r}</b><span>${esc(r.t)}${i===curIdx?" · current":""}
+        ${i>curIdx?`<span class="req"><span class="${c.L.lvl>=r.lvl?"y":"n"}">${c.L.lvl>=r.lvl?"✓":"·"} Level ${r.lvl}</span>${r.need.filter(id=>!RANKS[i-1].need.includes(id)).map(id=>{const b=BOSSES.find(x=>x.id===id);return ` <span class="${state.bosses[id]?"y":"n"}">${state.bosses[id]?"✓":"·"} ${esc(b.t)}</span>`}).join("")}</span>`:""}</span></div>`).join("")}</div>
+    </section>
+    <section class="win"><div class="qhead"><div><div class="eyebrow">Achievements</div><h2>${c.ach.length} of ${ACH.length}</h2></div></div>
+      <div class="ach">${ACH.map(a=>{const got=c.ach.includes(a.id);return `<div class="badge${got?" got":""}"><span class="ic"><span>${esc(a.ic)}</span></span><span style="min-width:0"><b>${esc(a.t)}</b><small>${esc(a.d)}</small></span></div>`}).join("")}</div>
     </section>
     <section class="win"><div class="eyebrow">System</div>
-      <p class="muted" style="margin:8px 0 0;font-size:13px">Progress lives on this phone. Copy a backup code now and then, and keep it in Notes.</p>
+      <div style="margin-top:8px"><label for="nameBox" class="small muted">Hunter name</label>
+        <div class="danger" style="margin-top:4px"><input id="nameBox" maxlength="32" value="${esc(state.name)}" placeholder="Neurosurgery Hunter" style="flex:1;min-width:0;background:var(--void);color:var(--ice);border:1px solid var(--line);border-radius:2px;padding:8px;font:inherit"><button class="btn" data-act="saveName">Save</button></div></div>
+      <p class="small muted" style="margin-top:12px">Progress lives on this phone. Copy a backup code every week or two and keep it in Notes.</p>
       <div class="danger"><button class="btn" data-act="backup">Copy backup code</button><button class="btn" data-act="restoreOpen">Restore from code</button></div>
-      ${restoreOpen?`<div style="margin-top:10px"><label for="restoreBox" class="muted" style="font-size:13px">Paste your backup code</label><textarea id="restoreBox"></textarea><div class="danger"><button class="btn" data-act="restoreDo">Restore</button><button class="btn" data-act="restoreNo">Cancel</button></div></div>`:""}
-      ${backupShow?`<div style="margin-top:10px"><label for="backupBox" class="muted" style="font-size:13px">Your backup code (select and copy)</label><textarea id="backupBox" readonly>${esc(JSON.stringify(state))}</textarea></div>`:""}
-      <div class="danger">${resetArm?`<span class="muted" style="font-size:13px">Erase all progress?</span><button class="btn red" data-act="resetYes">Erase</button><button class="btn" data-act="resetNo">Keep</button>`:`<button class="btn" data-act="resetArm">Reset progress</button>`}</div>
+      ${restoreOpen?`<div style="margin-top:10px"><label for="restoreBox" class="small muted">Paste your backup code</label><textarea id="restoreBox"></textarea><div class="danger"><button class="btn" data-act="restoreDo">Restore</button><button class="btn" data-act="restoreNo">Cancel</button></div></div>`:""}
+      ${backupShow?`<div style="margin-top:10px"><label for="backupBox" class="small muted">Your backup code (select and copy)</label><textarea id="backupBox" readonly>${esc(JSON.stringify(state))}</textarea></div>`:""}
+      <div class="danger">${resetArm?`<span class="small muted">Erase all progress?</span><button class="btn red" data-act="resetYes">Erase</button><button class="btn" data-act="resetNo">Keep</button>`:`<button class="btn" data-act="resetArm">Reset progress</button>`}</div>
+    </section>`;
+  }else{
+    const lastWk=weekKey(addDays(now,-7));
+    const tw=state.weekly[wk]||{},lw=state.weekly[lastWk]||{};
+    const daysIn=(k,n)=>{let x=0;for(let i=0;i<n;i++)if(dayCleared(state.daily[ymd(addDays(parse(k),i))]))x++;return x};
+    const elapsed=((now.getDay()+6)%7)+1;
+    const d=(a,b)=>{const x=a-b;return x===0?`<span class="d muted">same as last week</span>`:`<span class="d ${x>0?"up":"down"}">${x>0?"▲":"▼"} ${Math.abs(x)} vs last week</span>`};
+    const twx=c.wk[wk]||0,lwx=c.wk[lastWk]||0;
+    const daysSince=Math.round((parse(tk)-parse(state.start))/864e5)+1;
+    const avg=Math.round(c.total/Math.max(1,daysSince/7));
+    const toNext=c.L.need-c.L.into;
+    v.innerHTML=`<section class="win"><div class="eyebrow">Weekly report</div>
+      <h2 style="margin-top:4px">Week of ${fmt(wk,{day:"numeric",month:"short"})}</h2>
+      <div class="grid2">
+        <div class="cell"><div class="k">XP this week</div><div class="v">${twx}</div>${d(twx,lwx)}</div>
+        <div class="cell"><div class="k">Days cleared</div><div class="v">${daysIn(wk,elapsed)}<span class="muted" style="font-size:13px"> / ${elapsed}</span></div>${d(daysIn(wk,elapsed),daysIn(lastWk,elapsed))}</div>
+        <div class="cell"><div class="k">Weekly quests</div><div class="v">${weekCount(tw)}<span class="muted" style="font-size:13px"> / ${WEEK_TARGET}</span></div>${d(weekCount(tw),weekCount(lw))}</div>
+        <div class="cell"><div class="k">Next level</div><div class="v">${toNext}</div><span class="d muted">XP to level ${c.L.lvl+1}</span></div>
+      </div>
+    </section>
+    <section class="win"><div class="eyebrow">XP per week</div>
+      <p class="small muted" style="margin-top:4px">Last 12 weeks. Green bars hit the ${WEEK_XP_GOAL} XP goal, a realistic pace with call.</p>
+      ${weekChart(c)}
+    </section>
+    <section class="win"><div class="eyebrow">Last 16 weeks</div>
+      ${heatmap()}
+      <div class="legend"><span class="l4">Strong day</span><span class="l2">Cleared</span><span class="lr">Rest</span><span class="lm">Missed</span></div>
+    </section>
+    <section class="win"><div class="eyebrow">Personal records</div>
+      <div class="grid2">
+        <div class="cell"><div class="k">Longest streak</div><div class="v">${c.bestStreak}<span class="muted" style="font-size:13px"> days</span></div></div>
+        <div class="cell"><div class="k">Best week</div><div class="v">${c.bestWeek}<span class="muted" style="font-size:13px"> XP</span></div></div>
+        <div class="cell"><div class="k">Quests done</div><div class="v">${c.quests}</div></div>
+        <div class="cell"><div class="k">Days cleared</div><div class="v">${c.daysCleared}</div></div>
+        <div class="cell"><div class="k">Total XP</div><div class="v">${c.total.toLocaleString("en-ZA")}</div></div>
+        <div class="cell"><div class="k">Average per week</div><div class="v">${avg}</div></div>
+      </div>
+      <p class="foot">Hunting since ${fmt(state.start,{day:"numeric",month:"long",year:"numeric"})} · day ${daysSince}</p>
     </section>`;
   }
 }
 
-let toastT;
-function toast(title,sub){const t=document.getElementById("toast");t.innerHTML=esc(title)+(sub?`<small>${esc(sub)}</small>`:"");
-  t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),2600)}
+/* ---------- toasts ---------- */
+const queue=[];let showing=false;
+function toast(title,sub,cls){queue.push([title,sub,cls]);if(!showing)next()}
+function next(){const t=document.getElementById("toast");const m=queue.shift();if(!m){showing=false;return}showing=true;
+  t.className="toast"+(m[2]?" "+m[2]:"");t.innerHTML=esc(m[0])+(m[1]?`<small>${esc(m[1])}</small>`:"");
+  requestAnimationFrame(()=>t.classList.add("show"));
+  setTimeout(()=>{t.classList.remove("show");setTimeout(next,350)},2300)}
 
+/* ---------- actions ---------- */
+function toggle(obj,key){if(obj[key])delete obj[key];else obj[key]=true}
 document.addEventListener("click",e=>{
-  const tb=e.target.closest("[data-tab]");if(tb){tab=tb.dataset.tab;resetArm=false;render();return}
-  const b=e.target.closest("[data-act]");if(!b)return;
+  const tb=e.target.closest("[data-tab]");if(tb){tab=tb.dataset.tab;resetArm=false;jobPick=false;render();window.scrollTo({top:0});return}
+  const b=e.target.closest("[data-act]");if(!b||b.disabled)return;
   const act=b.dataset.act,id=b.dataset.id;
-  if(act==="backup"){const txt=JSON.stringify(state);
-    const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject();
-    p.then(()=>toast("Backup copied","Paste it into Notes")).catch(()=>{backupShow=true;render();const b=document.getElementById("backupBox");if(b){b.focus();b.select()}});return}
-  if(act==="restoreOpen"){restoreOpen=true;backupShow=false;render();return}
-  if(act==="restoreNo"){restoreOpen=false;render();return}
-  if(act==="restoreDo"){const b=document.getElementById("restoreBox");
-    try{const obj=JSON.parse(b.value.trim());if(!obj||typeof obj!=="object"||!obj.daily)throw 0;state=norm(obj);restoreOpen=false;save();render();toast("Progress restored","")}
-    catch(e){toast("That code didn't work","Copy the whole backup code and try again")}return}
   if(act==="resetArm"){resetArm=true;render();return}
   if(act==="resetNo"){resetArm=false;render();return}
-  const before=compute(state),bl=level(before.total,100).lvl;
+  if(act==="jobPick"){jobPick=true;render();return}
+  if(act==="saveName"){state.name=document.getElementById("nameBox").value.trim().slice(0,32);save();render();toast("Name saved","");return}
+  if(act==="backup"){const txt=JSON.stringify(state);
+    const p=navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(txt):Promise.reject();
+    p.then(()=>toast("Backup copied","Paste it into Notes")).catch(()=>{backupShow=true;render();const bx=document.getElementById("backupBox");if(bx){bx.focus();bx.select()}});return}
+  if(act==="restoreOpen"){restoreOpen=true;backupShow=false;render();return}
+  if(act==="restoreNo"){restoreOpen=false;render();return}
+  if(act==="restoreDo"){const bx=document.getElementById("restoreBox");
+    try{const obj=JSON.parse(bx.value.trim());if(!obj||typeof obj!=="object"||!obj.daily)throw 0;state=norm(obj);restoreOpen=false;save();render();toast("Progress restored","")}
+    catch(err){toast("That code didn't work","Copy the whole backup code and try again")}return}
+
+  const before=compute(state);
   const now=new Date(),tk=ymd(now),wk=weekKey(now);
+  const wasCleared=dayCleared(state.daily[tk]);
   if(act==="resetYes"){state=blank();resetArm=false}
-  else if(act==="daily"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);d[id]=!d[id];if(!d[id])delete d[id]}
-  else if(act==="rest"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);d.rest=!d.rest;if(!d.rest)delete d.rest}
-  else if(act==="weekly"){const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);w[id]=!w[id];if(!w[id])delete w[id]}
+  else if(act==="daily"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);toggle(d,id)}
+  else if(act==="mode"){const d=state.daily[tk]=Object.assign({},state.daily[tk]);delete d.rest;delete d.call;if(id==="rest")d.rest=true;if(id==="call")d.call=true}
+  else if(act==="weekly"){const w=state.weekly[wk]=Object.assign({},state.weekly[wk]);toggle(w,id)}
   else if(act==="dungeon"){if(state.dungeons[id])delete state.dungeons[id];else state.dungeons[id]=tk}
   else if(act==="boss"){if(state.bosses[id])delete state.bosses[id];else state.bosses[id]=tk}
-  const after=compute(state),al=level(after.total,100).lvl;
-  if(after.rank.r!==before.rank.r&&RANKS.indexOf(after.rank)>RANKS.indexOf(before.rank)) toast("Rank up: "+after.rank.r,after.rank.t);
-  else if(al>bl) toast("Level up",`You are now level ${al}`);
-  else if(act==="daily"&&cleared(state.daily[tk])&&DAILY.some(q=>q.id===id)&&state.daily[tk][id]) toast("Daily quest cleared",`+${DAILY_BONUS} XP bonus`);
-  else if(act==="dungeon"&&state.dungeons[id]) toast("Gate cleared",`+${DUNGEON_XP} INT`);
-  else if(act==="boss"&&state.bosses[id]) toast("Boss defeated","Reward claimed");
+  else if(act==="alloc"){if(before.sp>0)state.alloc[id]=(+state.alloc[id]||0)+1}
+  else if(act==="realloc"){state.alloc={}}
+  else if(act==="job"){state.job=id;jobPick=false}
+  const after=compute(state);
+  // keep skill points valid if levels drop after unticking
+  if(after.sp<0){let over=-after.sp;for(const k of Object.keys(state.alloc).reverse()){const t=Math.min(over,+state.alloc[k]||0);state.alloc[k]-=t;over-=t;if(!state.alloc[k])delete state.alloc[k]}}
+  const fin=compute(state);
+  if(RANKS.indexOf(fin.rank)>RANKS.indexOf(before.rank)) toast("Rank up: "+fin.rank.r,fin.rank.t);
+  if(fin.L.lvl>before.L.lvl){toast("Level up",`Level ${fin.L.lvl} · +${SP_PER_LEVEL*(fin.L.lvl-before.L.lvl)} skill points`);
+    if(fin.title!==before.title) toast("New title",fin.title);
+    if(before.L.lvl<JOB_LEVEL&&fin.L.lvl>=JOB_LEVEL) toast("Job change unlocked","Choose your class on the Hunter tab")}
+  for(const a of fin.ach) if(!before.ach.includes(a)){const A=ACH.find(x=>x.id===a);toast("Achievement",A.t)}
+  if(act==="daily"&&id==="hidden"&&state.daily[tk].hidden) toast("Hidden quest complete","+15 XP","v");
+  else if((act==="daily"||act==="mode")&&!wasCleared&&dayCleared(state.daily[tk])) toast("Daily quest cleared",`+${DAILY_BONUS} XP bonus`);
+  if(act==="dungeon"&&state.dungeons[id]) toast("Gate cleared",`+${DUNGEON_XP} INT`);
+  if(act==="boss"&&state.bosses[id]) toast("Boss defeated","Reward claimed");
   render();save();
 });
 
-/* persistence: this phone only */
-function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){document.getElementById("sync").textContent="Couldn't save"}}
+/* ---------- persistence: this phone only ---------- */
+function save(){try{localStorage.setItem(LS,JSON.stringify(state))}catch(e){toast("Couldn't save","Storage is full or blocked")}}
 render();
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)render()});
 if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
